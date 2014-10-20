@@ -9,7 +9,7 @@ import javax.imageio.ImageIO
 
 object TextLib extends App {
 
-  def fontPath = "mincho.ttf"
+  def fontPath = "src/main/resources/mincho.ttf"
 
   def createFont(size: Float) = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath)).deriveFont(size)
 
