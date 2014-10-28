@@ -21,23 +21,23 @@ publishArtifact in Test := false
 pomIncludeRepository := { _ => false }
 
 pomExtra := (
-  <url>http://jsuereth.com/scala-arm</url>
+  <url>https://github.com/ad-dice/textlib</url>
   <licenses>
-    <license>
-      <name>BSD-style</name>
-      <url>http://www.opensource.org/licenses/bsd-license.php</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+  <license>
+    <name>Apache License, Version 2.0</name>
+    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    <distribution>repo</distribution>
+    <comments>A business-friendly OSS license</comments>
+  </license>
+</licenses>
   <scm>
-    <url>git@github.com:jsuereth/scala-arm.git</url>
-    <connection>scm:git:git@github.com:jsuereth/scala-arm.git</connection>
+    <url>git@github.com:ad-dice/textlib.git</url>
+    <connection>scm:git:git@github.com:ad-dice/textlib.git</connection>
   </scm>
   <developers>
     <developer>
-      <id>jsuereth</id>
-      <name>Josh Suereth</name>
-      <url>http://jsuereth.com</url>
+      <id>ad-dice</id>
+      <name>Ito, Bya, Yoshida</name>
+      <url>http://ad-dice.com/</url>
     </developer>
   </developers>)
-  
