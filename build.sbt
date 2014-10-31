@@ -4,9 +4,7 @@ organization := "com.ad_dice"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.11.1"
-
-publishMavenStyle := true
+scalaVersion := "2.11.2"
 
 publishTo <<= version { (v: String) =>
   val nexus = "https://oss.sonatype.org/"
@@ -15,6 +13,8 @@ publishTo <<= version { (v: String) =>
   else
     Some("releases"  at nexus + "service/local/staging/deploy/maven2")
 }
+
+publishMavenStyle := true
 
 publishArtifact in Test := false
 
