@@ -297,8 +297,6 @@ object TextLib extends App {
     *  @param allignVertical    value range --> "top", center-, bottom) center-* determines 2nd line starts from which side 
   */
 
-
-
   /** debug rendering a vertical text */
   def showVerticalText(text: String, fontsize: Int) {
     val frame = new javax.swing.JFrame
