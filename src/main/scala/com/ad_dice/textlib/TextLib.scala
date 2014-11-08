@@ -7,6 +7,10 @@ import java.awt.font.FontRenderContext
 import java.io.File
 import javax.imageio.ImageIO
 
+case class Source(text: String)
+
+case class TargetAreaInfo(xt: Int, yt: Int, xb: Int, yb: Int, size: Int)
+
 object TextLib extends App {
 
   def fontPath = "src/main/resources/mincho.ttf"
@@ -94,13 +98,19 @@ object TextLib extends App {
     }
   }
 
-  /** write strings by vertical type and convert to image file
+    /** write strings by horizontal */
+  def writeHorizontal(g: Graphics2D, text: String, size: Int, x: Int, y: Int) {
+    g.setFont(createFont(size))
+    g.drawString(text, x, y + size)
+  }
+
+   /** write strings by vertical type and convert to image file
    *  for Vertical write
-   *  @param allignHorizontal  value range --> "left", "center-left", "center-right", "right") center-* determines 2nd line starts from which side 
-   *  @param allignVertical    value range --> "top", "center", "bottom") "center-*" is dealt as "center"
+   *  @param allignHorizontal  value range --> ("left", "center-left", "center-right", "right") center-* determines 2nd line starts from which side 
+   *  @param allignVertical    value range --> ("top", "center", "bottom") "center-*" is dealt as "center"
    */
 
-  def immutable(g: Graphics2D, source: Source, targetAreaInfo: TargetAreaInfo, allignVertical: String, allignHorizontal: String){
+  def immutableVerticalWrite(g: Graphics2D, source: Source, targetAreaInfo: TargetAreaInfo, allignVertical: String, allignHorizontal: String){
     val letter_size = source.text.length()
     val text_length = targetAreaInfo.size * letter_size
     val width = targetAreaInfo.xb - targetAreaInfo.xt
@@ -125,7 +135,7 @@ object TextLib extends App {
       }
 
       /** start write right side */
-      if(allignHorizontal == "right"){
+      else if(allignHorizontal == "right"){
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - targetAreaInfo.size, targetAreaInfo.yt)
         }
@@ -136,7 +146,7 @@ object TextLib extends App {
       }
 
       /** start write center-left side */
-      if(allignHorizontal == "center-left"){
+      else if(allignHorizontal == "center-left"){
         val mid = (targetAreaInfo.xt + targetAreaInfo.xb) / 2
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, mid, targetAreaInfo.yt)
@@ -149,7 +159,7 @@ object TextLib extends App {
       }
 
       /** start write center-left side */
-      if(allignHorizontal == "center-right"){
+      else if(allignHorizontal == "center-right" || allignHorizontal.grouped(6).toList(0) == "center"){
         val mid = (targetAreaInfo.xt + targetAreaInfo.xb) / 2
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, mid, targetAreaInfo.yt)
@@ -160,15 +170,16 @@ object TextLib extends App {
               writeVertical(g, text_grouped_list(i), targetAreaInfo.size, mid + gap - targetAreaInfo.size * i, targetAreaInfo.yt)
         }
       }
+
     }
 
-
-    if(allignVertical == "bottom"){
+    else if(allignVertical == "bottom"){
       val line_letter_size = height / targetAreaInfo.size
-      val reversed_text = source.text.reverse
-      val text_grouped_list = reversed_text.grouped(line_letter_size).toList
 
       if(allignHorizontal == "left"){
+        val reversed_text = source.text.reverse
+        val text_grouped_list = reversed_text.grouped(line_letter_size).toList
+        
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, targetAreaInfo.xt, targetAreaInfo.yb - text_length)
         }
@@ -180,17 +191,21 @@ object TextLib extends App {
       }
 
       else if(allignHorizontal == "right"){
+        val text_grouped_list = source.text.grouped(line_letter_size).toList
+
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - targetAreaInfo.size, targetAreaInfo.yb - text_length)
         }
         else{
           for(i <- 0 to text_grouped_list.size - 1)
-              writeVertical(g, text_grouped_list(i).reverse, targetAreaInfo.size, targetAreaInfo.xb - targetAreaInfo.size * (i + 1),
+              writeVertical(g, text_grouped_list(i), targetAreaInfo.size, targetAreaInfo.xb - targetAreaInfo.size * (i + 1),
                 targetAreaInfo.yb - text_grouped_list(i).size * targetAreaInfo.size)
         }
       }
 
       else if(allignHorizontal == "center-left"){
+        val reversed_text = source.text.reverse
+        val text_grouped_list = reversed_text.grouped(line_letter_size).toList
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, (targetAreaInfo.xt + targetAreaInfo.xb) / 2, targetAreaInfo.yb - text_length)
         }
@@ -204,7 +219,8 @@ object TextLib extends App {
         }
       }
 
-      else if(allignHorizontal == "center-right"){
+      else if(allignHorizontal == "center-right" || allignHorizontal.grouped(6).toList(0) == "center"){
+        val text_grouped_list = source.text.grouped(line_letter_size).toList
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, (targetAreaInfo.xt + targetAreaInfo.xb) / 2, targetAreaInfo.yb - text_length)
         }
@@ -212,7 +228,7 @@ object TextLib extends App {
           val gap = text_grouped_list.size / 2 * targetAreaInfo.size
 
           for(i <- 0 to text_grouped_list.size - 1)
-              writeVertical(g, text_grouped_list(i).reverse, targetAreaInfo.size, 
+              writeVertical(g, text_grouped_list(i), targetAreaInfo.size, 
                 (targetAreaInfo.xt + targetAreaInfo.xb) / 2 + gap - targetAreaInfo.size * (i + 1),
                 targetAreaInfo.yb - text_grouped_list(i).size * targetAreaInfo.size)
         }
@@ -220,7 +236,7 @@ object TextLib extends App {
 
     }
 
-    if(allignVertical == "center"){
+    else if(allignVertical == "center" || allignVertical.grouped(6).toList(0) == "center"){
       val line_letter_size = height / targetAreaInfo.size
       val text_grouped_list = source.text.grouped(line_letter_size).toList
 
@@ -271,7 +287,7 @@ object TextLib extends App {
         }
       }
 
-      else if(allignHorizontal == "center-right"){
+      else if(allignHorizontal == "center-right" || allignHorizontal.grouped(6).toList(0) == "center"){
         if(text_length <= height){
           val gap = source.text.size / 2 * targetAreaInfo.size
           writeVertical(g, source.text, targetAreaInfo.size, (targetAreaInfo.xt + targetAreaInfo.xb)/2, 
@@ -291,11 +307,206 @@ object TextLib extends App {
     }
 
   }
+
+
   /**
-    *  for Horizontal write (under construction)
-    *  @param allignHorizontal  value range --> "left", "center", "right")  center-* is dealt as center
-    *  @param allignVertical    value range --> "top", center-, bottom) center-* determines 2nd line starts from which side 
+    *  for Horizontal write
+    *  @param allignHorizontal  value range --> ("left", "center", "right")  center-* is dealt as center
+    *  @param allignVertical    value range --> ("top", "center-top", "center-bottom", "bottom") center-* determines 2nd line starts from which side 
   */
+
+  def immutableHorizontalWrite(g: Graphics2D, source: Source, targetAreaInfo: TargetAreaInfo, allignVertical: String, allignHorizontal: String){
+    val letter_size = source.text.length()
+    val text_length = targetAreaInfo.size * letter_size
+    val width = targetAreaInfo.xb - targetAreaInfo.xt
+    val height = targetAreaInfo.yb - targetAreaInfo.yt
+    val mid_width = (targetAreaInfo.xt + targetAreaInfo.xb) / 2
+    val mid_height = (targetAreaInfo.yt + targetAreaInfo.yb) / 2
+
+    println(text_length, width, height)
+
+
+    /** write horizontal start LEFT side*/
+    if(allignHorizontal == "left"){
+      val line_letter_size = width / targetAreaInfo.size
+      val text_grouped_list = source.text.grouped(line_letter_size).toList
+           
+      /** start write top side */
+      if(allignVertical == "top"){
+        if(text_length <= width){
+
+          writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xt, targetAreaInfo.yt)
+        }
+        else{
+          for(i <- 0 to text_grouped_list.size - 1)
+              writeHorizontal(g, text_grouped_list(i), targetAreaInfo.size, targetAreaInfo.xt, targetAreaInfo.yt + targetAreaInfo.size * i)
+        }
+      }
+
+      /** start write bottom side */
+      else if(allignVertical == "bottom"){
+        if(text_length <= width){
+          writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xt, targetAreaInfo.yb - targetAreaInfo.size)
+        }
+        else{
+          val gap = text_grouped_list.size * targetAreaInfo.size
+          for(i <- 0 to text_grouped_list.size - 1)
+              //writeHorizontal(g, text_grouped_list(i), targetAreaInfo.size, targetAreaInfo.xt, targetAreaInfo.yb - targetAreaInfo.size * (i + 1))
+              writeHorizontal(g, text_grouped_list(i), targetAreaInfo.size, targetAreaInfo.xt, targetAreaInfo.yb - gap + targetAreaInfo.size * i)
+        }
+      }
+
+      /** start write center-bottom side */
+      else if(allignVertical == "center-bottom"){
+        val reversed_text = source.text.reverse
+        val text_grouped_list_ = reversed_text.grouped(line_letter_size).toList
+
+        if(text_length <= width){
+          writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xt, mid_height)
+        }
+        else{
+          val gap = text_grouped_list.size / 2 * targetAreaInfo.size
+          for(i <- 0 to text_grouped_list_.size - 1)
+              writeHorizontal(g, text_grouped_list_(i).reverse, targetAreaInfo.size, targetAreaInfo.xt, mid_height + gap - targetAreaInfo.size * i)
+        }
+      }
+
+      /** start write center-top side */
+      else if(allignVertical == "center-top" || allignVertical.grouped(6).toList(0) == "center"){
+        if(text_length <= width){
+          writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xt, mid_height)
+        }
+        else{
+          val gap = text_grouped_list.size / 2 * targetAreaInfo.size
+          for(i <- 0 to text_grouped_list.size - 1)
+              writeHorizontal(g, text_grouped_list(i), targetAreaInfo.size, targetAreaInfo.xt, mid_height - gap + targetAreaInfo.size * i)
+        }
+      }
+    }
+
+    /** write horizontal start RIGHT side*/
+    else if(allignHorizontal == "right"){
+      val line_letter_size = width / targetAreaInfo.size
+      val text_grouped_list = source.text.grouped(line_letter_size).toList
+           
+      /** start write top side */
+      if(allignVertical == "top"){
+        if(text_length <= width){
+
+          writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - text_length, targetAreaInfo.yt)
+        }
+        else{
+          for(i <- 0 to text_grouped_list.size - 1)          
+              writeHorizontal(g, text_grouped_list(i), targetAreaInfo.size, 
+                targetAreaInfo.xb - text_grouped_list(i).size * targetAreaInfo.size, targetAreaInfo.yt + targetAreaInfo.size * i)
+        }
+      }
+
+      /** start write bottom side */
+      if(allignVertical == "bottom"){
+        if(text_length <= width){
+          writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - text_length, targetAreaInfo.yb - targetAreaInfo.size)
+        }
+        else{
+          val gap = text_grouped_list.size * targetAreaInfo.size
+          for(i <- 0 to text_grouped_list.size - 1)
+              writeHorizontal(g, text_grouped_list(i), targetAreaInfo.size, 
+                targetAreaInfo.xb - text_grouped_list(i).size * targetAreaInfo.size, targetAreaInfo.yb - gap + targetAreaInfo.size * i)
+        }
+      }
+
+      /** start write center-bottom side */
+      if(allignVertical == "center-bottom"){
+        val reversed_text = source.text.reverse
+        val text_grouped_list_ = reversed_text.grouped(line_letter_size).toList
+        if(text_length <= width){
+          writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - text_length, mid_height)
+        }
+        else{
+          val gap = text_grouped_list.size / 2 * targetAreaInfo.size
+          for(i <- 0 to text_grouped_list.size - 1)
+              writeHorizontal(g, text_grouped_list_(i).reverse, targetAreaInfo.size, 
+                targetAreaInfo.xb - text_grouped_list_(i).size * targetAreaInfo.size, mid_height + gap - targetAreaInfo.size * i)
+        }
+      }
+
+      /** start write center-top side */
+      if(allignVertical == "center-top" || allignVertical.grouped(6).toList(0) == "center"){
+        if(text_length <= width){
+          writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - text_length, mid_height)
+        }
+        else{
+          val gap = text_grouped_list.size / 2 * targetAreaInfo.size
+          for(i <- 0 to text_grouped_list.size - 1)
+              writeHorizontal(g, text_grouped_list(i), targetAreaInfo.size, 
+                targetAreaInfo.xb - text_grouped_list(i).size * targetAreaInfo.size, mid_height - gap + targetAreaInfo.size * i)
+        }
+      }
+    }
+
+    /** write horizontal start CENTER side*/
+    else if(allignHorizontal == "center" || allignHorizontal.grouped(6).toList(0) == "center"){
+      val line_letter_size = width / targetAreaInfo.size
+      val text_grouped_list = source.text.grouped(line_letter_size).toList
+           
+      /** start write top side */
+      if(allignVertical == "top"){
+        if(text_length <= width){
+
+          writeHorizontal(g, source.text, targetAreaInfo.size, mid_width - text_length / 2, targetAreaInfo.yt)
+        }
+        else{
+          for(i <- 0 to text_grouped_list.size - 1)          
+              writeHorizontal(g, text_grouped_list(i), targetAreaInfo.size, 
+                mid_width - text_grouped_list(i).size / 2 * targetAreaInfo.size, targetAreaInfo.yt + targetAreaInfo.size * i)
+        }
+      }
+
+      /** start write bottom side */
+      if(allignVertical == "bottom"){
+        if(text_length <= width){
+          writeHorizontal(g, source.text, targetAreaInfo.size, mid_width - text_length / 2, targetAreaInfo.yb - targetAreaInfo.size)
+        }
+        else{
+          val gap = text_grouped_list.size * targetAreaInfo.size
+          for(i <- 0 to text_grouped_list.size - 1)
+              writeHorizontal(g, text_grouped_list(i), targetAreaInfo.size, 
+                mid_width - text_grouped_list(i).size / 2 * targetAreaInfo.size, targetAreaInfo.yb - gap + targetAreaInfo.size * i)
+        }
+      }
+
+      /** start write center-bottom side */
+      if(allignVertical == "center-bottom"){
+        val reversed_text = source.text.reverse
+        val text_grouped_list_ = reversed_text.grouped(line_letter_size).toList
+
+        if(text_length <= width){
+          writeHorizontal(g, source.text, targetAreaInfo.size, mid_width - text_length / 2, mid_height)
+        }
+        else{
+          val gap = text_grouped_list.size / 2 * targetAreaInfo.size
+          for(i <- 0 to text_grouped_list.size - 1)
+              writeHorizontal(g, text_grouped_list_(i).reverse, targetAreaInfo.size, 
+                mid_width - text_grouped_list_(i).size / 2 * targetAreaInfo.size, 
+                mid_height + gap - targetAreaInfo.size * i)
+        }
+      }
+
+      /** start write center-top side */
+      if(allignVertical == "center-top" || allignVertical.grouped(6).toList(0) == "center"){
+        if(text_length <= width){
+          writeHorizontal(g, source.text, targetAreaInfo.size, mid_width - text_length / 2, mid_height)
+        }
+        else{
+          val gap = text_grouped_list.size / 2 * targetAreaInfo.size
+          for(i <- 0 to text_grouped_list.size - 1)
+              writeHorizontal(g, text_grouped_list(i), targetAreaInfo.size, 
+                mid_width - text_grouped_list(i).size / 2 * targetAreaInfo.size, 
+                mid_height - gap + targetAreaInfo.size * i)
+        }
+      }
+    }
+  }
 
   /** debug rendering a vertical text */
   def showVerticalText(text: String, fontsize: Int) {
