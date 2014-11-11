@@ -11,10 +11,6 @@ case class TargetAreaInfo(xt: Int, yt: Int, xb: Int, yb: Int, size: Int)
 
 object TextLib extends App {
 
-  def fontPath = "src/main/resources/mincho.ttf"
-
-  def createFont(size: Float) = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath)).deriveFont(size)
-
     /**  definitions for vertical writing */
   def rotationTranslationUpChars = Set('（')
   def rotationTranslationDownChars = Set('）')
@@ -30,7 +26,7 @@ object TextLib extends App {
   
     /** write strings by vertical */
   def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int, i: Int = 0) {
-    val font = createFont(size)
+    val font = g.getFont.deriveFont(size.toFloat)
     if (text.nonEmpty) {
       val char = text.head
       val r = size / g.getFontMetrics(font).stringWidth(char.toString)
@@ -98,7 +94,7 @@ object TextLib extends App {
 
     /** write strings by horizontal */
   def writeHorizontal(g: Graphics2D, text: String, size: Int, x: Int, y: Int) {
-    g.setFont(createFont(size))
+    g.setFont(g.getFont.deriveFont(size.toFloat))
     g.drawString(text, x, y + size)
   }
 
