@@ -106,11 +106,11 @@ object TextLib extends App {
 
    /** write strings by vertical type and convert to image file
    *  for Vertical write
-   *  @param allignHorizontal  value range --> ("left", "center-left", "center-right", "right") center-* determines 2nd line starts from which side 
-   *  @param allignVertical    value range --> ("top", "center", "bottom") "center-*" is dealt as "center"
+   *  @param alignHorizontal  value range --> ("left", "center-left", "center-right", "right") center-* determines 2nd line starts from which side 
+   *  @param alignVertical    value range --> ("top", "center", "bottom") "center-*" is dealt as "center"
    */
 
-  def immutableVerticalWrite(g: Graphics2D, source: Source, targetAreaInfo: TargetAreaInfo, allignVertical: String, allignHorizontal: String){
+  def immutableVerticalWrite(g: Graphics2D, source: Source, targetAreaInfo: TargetAreaInfo, alignVertical: String, alignHorizontal: String){
     val letter_size = source.text.length()
     val text_length = targetAreaInfo.size * letter_size
     val width = targetAreaInfo.xb - targetAreaInfo.xt
@@ -118,12 +118,12 @@ object TextLib extends App {
 
     println(text_length, width, height)
 
-    if(allignVertical == "top"){
+    if(alignVertical == "top"){
       val line_letter_size = height / targetAreaInfo.size
       val text_grouped_list = source.text.grouped(line_letter_size).toList
            
       /** start write left side */
-      if(allignHorizontal == "left"){
+      if(alignHorizontal == "left"){
         if(text_length <= height){
 
           writeVertical(g, source.text, targetAreaInfo.size, targetAreaInfo.xt, targetAreaInfo.yt)
@@ -135,7 +135,7 @@ object TextLib extends App {
       }
 
       /** start write right side */
-      else if(allignHorizontal == "right"){
+      else if(alignHorizontal == "right"){
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - targetAreaInfo.size, targetAreaInfo.yt)
         }
@@ -146,7 +146,7 @@ object TextLib extends App {
       }
 
       /** start write center-left side */
-      else if(allignHorizontal == "center-left"){
+      else if(alignHorizontal == "center-left"){
         val mid = (targetAreaInfo.xt + targetAreaInfo.xb) / 2
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, mid, targetAreaInfo.yt)
@@ -159,7 +159,7 @@ object TextLib extends App {
       }
 
       /** start write center-left side */
-      else if(allignHorizontal == "center-right" || allignHorizontal.grouped(6).toList(0) == "center"){
+      else if(alignHorizontal == "center-right" || alignHorizontal.grouped(6).toList(0) == "center"){
         val mid = (targetAreaInfo.xt + targetAreaInfo.xb) / 2
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, mid, targetAreaInfo.yt)
@@ -173,10 +173,10 @@ object TextLib extends App {
 
     }
 
-    else if(allignVertical == "bottom"){
+    else if(alignVertical == "bottom"){
       val line_letter_size = height / targetAreaInfo.size
 
-      if(allignHorizontal == "left"){
+      if(alignHorizontal == "left"){
         val reversed_text = source.text.reverse
         val text_grouped_list = reversed_text.grouped(line_letter_size).toList
         
@@ -190,7 +190,7 @@ object TextLib extends App {
         }
       }
 
-      else if(allignHorizontal == "right"){
+      else if(alignHorizontal == "right"){
         val text_grouped_list = source.text.grouped(line_letter_size).toList
 
         if(text_length <= height){
@@ -203,7 +203,7 @@ object TextLib extends App {
         }
       }
 
-      else if(allignHorizontal == "center-left"){
+      else if(alignHorizontal == "center-left"){
         val reversed_text = source.text.reverse
         val text_grouped_list = reversed_text.grouped(line_letter_size).toList
         if(text_length <= height){
@@ -219,7 +219,7 @@ object TextLib extends App {
         }
       }
 
-      else if(allignHorizontal == "center-right" || allignHorizontal.grouped(6).toList(0) == "center"){
+      else if(alignHorizontal == "center-right" || alignHorizontal.grouped(6).toList(0) == "center"){
         val text_grouped_list = source.text.grouped(line_letter_size).toList
         if(text_length <= height){
           writeVertical(g, source.text, targetAreaInfo.size, (targetAreaInfo.xt + targetAreaInfo.xb) / 2, targetAreaInfo.yb - text_length)
@@ -236,11 +236,11 @@ object TextLib extends App {
 
     }
 
-    else if(allignVertical == "center" || allignVertical.grouped(6).toList(0) == "center"){
+    else if(alignVertical == "center" || alignVertical.grouped(6).toList(0) == "center"){
       val line_letter_size = height / targetAreaInfo.size
       val text_grouped_list = source.text.grouped(line_letter_size).toList
 
-      if(allignHorizontal == "left"){
+      if(alignHorizontal == "left"){
         if(text_length <= height){
           val gap = source.text.size / 2 * targetAreaInfo.size
           writeVertical(g, source.text, targetAreaInfo.size, targetAreaInfo.xt, 
@@ -255,7 +255,7 @@ object TextLib extends App {
         }
       }
 
-      else if(allignHorizontal == "right"){
+      else if(alignHorizontal == "right"){
         if(text_length <= height){
           val gap = source.text.size / 2 * targetAreaInfo.size
           writeVertical(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - targetAreaInfo.size, 
@@ -270,7 +270,7 @@ object TextLib extends App {
         }
       }
 
-      else if(allignHorizontal == "center-left"){
+      else if(alignHorizontal == "center-left"){
         if(text_length <= height){
           val gap = source.text.size / 2 * targetAreaInfo.size
           writeVertical(g, source.text, targetAreaInfo.size, (targetAreaInfo.xt + targetAreaInfo.xb)/2, 
@@ -287,7 +287,7 @@ object TextLib extends App {
         }
       }
 
-      else if(allignHorizontal == "center-right" || allignHorizontal.grouped(6).toList(0) == "center"){
+      else if(alignHorizontal == "center-right" || alignHorizontal.grouped(6).toList(0) == "center"){
         if(text_length <= height){
           val gap = source.text.size / 2 * targetAreaInfo.size
           writeVertical(g, source.text, targetAreaInfo.size, (targetAreaInfo.xt + targetAreaInfo.xb)/2, 
@@ -311,11 +311,11 @@ object TextLib extends App {
 
   /**
     *  for Horizontal write
-    *  @param allignHorizontal  value range --> ("left", "center", "right")  center-* is dealt as center
-    *  @param allignVertical    value range --> ("top", "center-top", "center-bottom", "bottom") center-* determines 2nd line starts from which side 
+    *  @param alignHorizontal  value range --> ("left", "center", "right")  center-* is dealt as center
+    *  @param alignVertical    value range --> ("top", "center-top", "center-bottom", "bottom") center-* determines 2nd line starts from which side 
   */
 
-  def immutableHorizontalWrite(g: Graphics2D, source: Source, targetAreaInfo: TargetAreaInfo, allignVertical: String, allignHorizontal: String){
+  def immutableHorizontalWrite(g: Graphics2D, source: Source, targetAreaInfo: TargetAreaInfo, alignVertical: String, alignHorizontal: String){
     val letter_size = source.text.length()
     val text_length = targetAreaInfo.size * letter_size
     val width = targetAreaInfo.xb - targetAreaInfo.xt
@@ -327,12 +327,12 @@ object TextLib extends App {
 
 
     /** write horizontal start LEFT side*/
-    if(allignHorizontal == "left"){
+    if(alignHorizontal == "left"){
       val line_letter_size = width / targetAreaInfo.size
       val text_grouped_list = source.text.grouped(line_letter_size).toList
            
       /** start write top side */
-      if(allignVertical == "top"){
+      if(alignVertical == "top"){
         if(text_length <= width){
 
           writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xt, targetAreaInfo.yt)
@@ -344,7 +344,7 @@ object TextLib extends App {
       }
 
       /** start write bottom side */
-      else if(allignVertical == "bottom"){
+      else if(alignVertical == "bottom"){
         if(text_length <= width){
           writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xt, targetAreaInfo.yb - targetAreaInfo.size)
         }
@@ -357,7 +357,7 @@ object TextLib extends App {
       }
 
       /** start write center-bottom side */
-      else if(allignVertical == "center-bottom"){
+      else if(alignVertical == "center-bottom"){
         val reversed_text = source.text.reverse
         val text_grouped_list_ = reversed_text.grouped(line_letter_size).toList
 
@@ -372,7 +372,7 @@ object TextLib extends App {
       }
 
       /** start write center-top side */
-      else if(allignVertical == "center-top" || allignVertical.grouped(6).toList(0) == "center"){
+      else if(alignVertical == "center-top" || alignVertical.grouped(6).toList(0) == "center"){
         if(text_length <= width){
           writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xt, mid_height)
         }
@@ -385,12 +385,12 @@ object TextLib extends App {
     }
 
     /** write horizontal start RIGHT side*/
-    else if(allignHorizontal == "right"){
+    else if(alignHorizontal == "right"){
       val line_letter_size = width / targetAreaInfo.size
       val text_grouped_list = source.text.grouped(line_letter_size).toList
            
       /** start write top side */
-      if(allignVertical == "top"){
+      if(alignVertical == "top"){
         if(text_length <= width){
 
           writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - text_length, targetAreaInfo.yt)
@@ -403,7 +403,7 @@ object TextLib extends App {
       }
 
       /** start write bottom side */
-      if(allignVertical == "bottom"){
+      if(alignVertical == "bottom"){
         if(text_length <= width){
           writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - text_length, targetAreaInfo.yb - targetAreaInfo.size)
         }
@@ -416,7 +416,7 @@ object TextLib extends App {
       }
 
       /** start write center-bottom side */
-      if(allignVertical == "center-bottom"){
+      if(alignVertical == "center-bottom"){
         val reversed_text = source.text.reverse
         val text_grouped_list_ = reversed_text.grouped(line_letter_size).toList
         if(text_length <= width){
@@ -431,7 +431,7 @@ object TextLib extends App {
       }
 
       /** start write center-top side */
-      if(allignVertical == "center-top" || allignVertical.grouped(6).toList(0) == "center"){
+      if(alignVertical == "center-top" || alignVertical.grouped(6).toList(0) == "center"){
         if(text_length <= width){
           writeHorizontal(g, source.text, targetAreaInfo.size, targetAreaInfo.xb - text_length, mid_height)
         }
@@ -445,12 +445,12 @@ object TextLib extends App {
     }
 
     /** write horizontal start CENTER side*/
-    else if(allignHorizontal == "center" || allignHorizontal.grouped(6).toList(0) == "center"){
+    else if(alignHorizontal == "center" || alignHorizontal.grouped(6).toList(0) == "center"){
       val line_letter_size = width / targetAreaInfo.size
       val text_grouped_list = source.text.grouped(line_letter_size).toList
            
       /** start write top side */
-      if(allignVertical == "top"){
+      if(alignVertical == "top"){
         if(text_length <= width){
 
           writeHorizontal(g, source.text, targetAreaInfo.size, mid_width - text_length / 2, targetAreaInfo.yt)
@@ -463,7 +463,7 @@ object TextLib extends App {
       }
 
       /** start write bottom side */
-      if(allignVertical == "bottom"){
+      if(alignVertical == "bottom"){
         if(text_length <= width){
           writeHorizontal(g, source.text, targetAreaInfo.size, mid_width - text_length / 2, targetAreaInfo.yb - targetAreaInfo.size)
         }
@@ -476,7 +476,7 @@ object TextLib extends App {
       }
 
       /** start write center-bottom side */
-      if(allignVertical == "center-bottom"){
+      if(alignVertical == "center-bottom"){
         val reversed_text = source.text.reverse
         val text_grouped_list_ = reversed_text.grouped(line_letter_size).toList
 
@@ -493,7 +493,7 @@ object TextLib extends App {
       }
 
       /** start write center-top side */
-      if(allignVertical == "center-top" || allignVertical.grouped(6).toList(0) == "center"){
+      if(alignVertical == "center-top" || alignVertical.grouped(6).toList(0) == "center"){
         if(text_length <= width){
           writeHorizontal(g, source.text, targetAreaInfo.size, mid_width - text_length / 2, mid_height)
         }
