@@ -24,9 +24,14 @@ object TextLib extends App {
     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','%', '$', '¥')
   
-    /** write strings by vertical */
-  def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int, i: Int = 0) {
+     /** write strings by vertical */
+  def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int): Unit = {
     val font = g.getFont.deriveFont(size.toFloat)
+    writeVertical(g, text, size, x, y, font)
+    g.setFont(font)
+  }
+
+  def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int, font:Font, i: Int = 0): Unit = {
     if (text.nonEmpty) {
       val char = text.head
       val r = size / g.getFontMetrics(font).stringWidth(char.toString)
@@ -37,7 +42,7 @@ object TextLib extends App {
         val gap_y = -size / r - size/2
         val gap_x = size / 8
         g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y)
-        writeVertical(g, text.tail, size, x, y - 3 * size / 4, i + 1) 
+        writeVertical(g, text.tail, size, x, y - 3 * size / 4, font, i + 1) 
       }
       else if (rotationTranslationDownChars(char)) {
         val transform = AffineTransform.getRotateInstance(Math.toRadians(90), 0, 0)
@@ -45,7 +50,7 @@ object TextLib extends App {
         val gap_y = -size / r
         val gap_x = size / 8
         g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y)
-        writeVertical(g, text.tail, size, x, y - 2 * size / 4, i + 1)
+        writeVertical(g, text.tail, size, x, y - 2 * size / 4, font, i + 1)
       }
 
       else if (rotationChars(char)) {
@@ -54,7 +59,7 @@ object TextLib extends App {
         val gap_y = -size / r
         val gap_x = size / 8
         g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y)
-        writeVertical(g, text.tail, size, x, y, i + 1)
+        writeVertical(g, text.tail, size, x, y, font, i + 1)
       }
 
 
@@ -62,21 +67,21 @@ object TextLib extends App {
         val transform = AffineTransform.getTranslateInstance(size / 4 * 3 , -size / 4 * 3)
         g.setFont(font.deriveFont(transform))
         g.drawString(char.toString, x, y + (i + 1) * size)
-        writeVertical(g, text.tail, size, x, y - size / 4 * 3, i + 1)
+        writeVertical(g, text.tail, size, x, y - size / 4 * 3, font, i + 1)
       }
 
       else if (translationSmallChars(char)) {
         val transform = AffineTransform.getTranslateInstance(size / 5 , 0)
         g.setFont(font.deriveFont(transform))
         g.drawString(char.toString, x, y + (i + 1) * size)
-        writeVertical(g, text.tail, size, x, y, i + 1)
+        writeVertical(g, text.tail, size, x, y, font, i + 1)
       }
 
       else if (halfwidthAlphabet(char)){
         val transform = AffineTransform.getTranslateInstance(size / 4 , 0)
         g.setFont(font.deriveFont(transform))
         g.drawString(char.toString, x, y + (i + 1) * size)
-        writeVertical(g, text.tail, size, x, y, i + 1) 
+        writeVertical(g, text.tail, size, x, y, font, i + 1) 
       }  
 
       else {
@@ -87,11 +92,11 @@ object TextLib extends App {
         else {
           g.drawString(char.toString, x, y + (i + 1) * size)
         }
-        writeVertical(g, text.tail, size, x, y, i + 1)
+        writeVertical(g, text.tail, size, x, y, font, i + 1)
       }
     }
   }
-
+  
     /** write strings by horizontal */
   def writeHorizontal(g: Graphics2D, text: String, size: Int, x: Int, y: Int) {
     g.setFont(g.getFont.deriveFont(size.toFloat))
