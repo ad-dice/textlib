@@ -124,18 +124,18 @@ object TextLib extends App {
 
     
     /** Exception: If x_top == x_bottom */
-    if(targetAreaInfo.xt == targetAreaInfo.xb){
+    if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
       Console.out.println( Console.RED + "Warning: WIDTH size is NULL. We set the WIDTH size to " + WidthDefault +" by default" + Console.RESET )
     }
 
-    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
+    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
 
     /** Exception: If y_top == y_bottom */
-    if(targetAreaInfo.yt == targetAreaInfo.yb){
+    if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
       Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
     }
 
-    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
+    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
 
 
     //** If width or height is shorter than Font size, we call MUTABLE function */
@@ -384,19 +384,19 @@ object TextLib extends App {
 
     
     /** Exception: If x_top == x_bottom */
-    if(targetAreaInfo.xt == targetAreaInfo.xb){
-      Console.out.println( Console.RED + "Warning: WIDTH size is NULL. We set the WIDTH size to " + WidthDefault +" by default" + Console.RESET )
+    if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
+      Console.out.println( Console.RED + "Warning: WIDTH size is NULL or 1. We set the WIDTH size to " + WidthDefault +" by default" + Console.RESET )
     }
 
-    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
+    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
     //println(x_bottom)
 
     /** Exception: If y_top == y_bottom */
-    if(targetAreaInfo.yt == targetAreaInfo.yb){
+    if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
       Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
     }
 
-    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
+    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
 
 
     //** If width or height is shorter than Font size, we call MUTABLE function */
@@ -631,6 +631,14 @@ object TextLib extends App {
     text_length:Int, i:Int = 1){
     val height = targetAreaInfo.yb - targetAreaInfo.yt
     val width = targetAreaInfo.xb - targetAreaInfo.xt
+
+    if(width / i < 1){
+      Console.out.println( Console.RED + "Warning: Your WIDTH size is too small to write." + Console.RESET )
+      mutableVerticalWrite(g, " ", targetAreaInfo, 
+        alignVertical, alignHorizontal)
+      return        
+    }
+    
     val text_length_max = height / (width / i)
     
     //println(width/i, text_length_max)
@@ -680,6 +688,14 @@ object TextLib extends App {
     text_length:Int, i:Int = 1){
     val height = targetAreaInfo.yb - targetAreaInfo.yt
     val width = targetAreaInfo.xb - targetAreaInfo.xt
+
+    if(height / i < 1){
+      Console.out.println( Console.RED + "Warning: Your HEIGHT size is too small to write." + Console.RESET )
+      mutableHorizontalWrite(g, " ", targetAreaInfo, 
+        alignVertical, alignHorizontal)
+      return        
+    }
+
     val text_length_max = width / (height / i)
     
     //println(height/i, text_length_max)
@@ -722,5 +738,4 @@ object TextLib extends App {
     mutableHorizontalWritePluralLines(g, source, targetAreaInfo, alignVertical, alignHorizontal, text_length)
       }    
   }
-
 }
