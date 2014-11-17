@@ -11,6 +11,10 @@ case class TargetAreaInfo(xt: Int, yt: Int, xb: Int, yb: Int, size: Int)
 
 object TextLib extends App {
 
+    val FontDefault = 10
+    val WidthDefault = 2
+    val HeightDefault = 2
+    
     /**  definitions for vertical writing */
     def rotationTranslationUpChars = Set('（')
     def rotationTranslationDownChars = Set('）')
