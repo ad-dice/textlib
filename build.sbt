@@ -2,7 +2,7 @@ name := "textlib"
 
 organization := "com.ad_dice"
 
-version := "0.1-SNAPSHOT"
+version := "0.2-SNAPSHOT"
 
 scalaVersion := "2.11.2"
 
