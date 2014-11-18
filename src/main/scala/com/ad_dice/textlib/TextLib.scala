@@ -36,7 +36,7 @@ object TextLib extends App {
     }
 
     def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int, font:Font, i: Int = 0): Unit = {
-      if (text.nonEmpty) {
+      if (text.nonEmpty && size != 0 && g.getFontMetrics(font).stringWidth(text.head.toString) > 0) {
         val char = text.head
         val r = size / g.getFontMetrics(font).stringWidth(char.toString)
 
