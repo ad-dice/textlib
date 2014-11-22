@@ -1,8 +1,14 @@
+import SonatypeKeys._
+
+sonatypeSettings
+
 name := "textlib"
 
-organization := "com.ad_dice"
+organization := "com.ad_dice.textlib"
 
-version := "0.2-SNAPSHOT"
+profileName := "com.ad_dice"
+
+version := "0.2.1"
 
 scalaVersion := "2.11.2"
 
