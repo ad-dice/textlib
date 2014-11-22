@@ -1,10 +1,10 @@
 textlib
 =======
+```
+addSbtPlugin("com.ad_dice" % "textlib" % "0.2.1")
+```
 
-addSbtPlugin("com.ad_dice.textlib" % "textlib" % "0.2.1")
-
-
-
+```
 def generate(background: Background, source: String, targetAreaInfo: TargetAreaInfo, alignVertical:Vertical, alignHorizontal: Horizontal, setFontInfo: String) {
   val backImage = ImageIO.read(new File(backImagePath(background)))
   val image = new BufferedImage(backImage.getWidth, backImage.getHeight, BufferedImage.TYPE_INT_ARGB)
@@ -52,3 +52,4 @@ def generate(background: Background, source: String, targetAreaInfo: TargetAreaI
     Horizontal.CenterRight,
     setFontInfo
     )
+```
