@@ -7,7 +7,7 @@ Introduction
 Add the folloing one line to build definition.
 ```
 libraryDependencies ++= Seq(
-  "com.ad_dice.textlib" %% "textlib" % "0.2.1"
+  "com.ad_dice.textlib" %% "textlib" % "0.2.2"
 )
 ```
 
