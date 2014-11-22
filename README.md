@@ -1,9 +1,18 @@
 textlib
 =======
+
+Introduction
+------
+
+Add the folloing one line to build definition.
 ```
-addSbtPlugin("com.ad_dice" % "textlib" % "0.2.1")
+libraryDependencies ++= Seq(
+  "com.ad_dice.textlib" %% "textlib" % "0.2.1"
+)
 ```
 
+How to use
+------
 ```
 def generate(background: Background, source: String, targetAreaInfo: TargetAreaInfo, alignVertical:Vertical, alignHorizontal: Horizontal, setFontInfo: String) {
   val backImage = ImageIO.read(new File(backImagePath(background)))
