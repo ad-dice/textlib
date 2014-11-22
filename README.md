@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
 )
 ```
 
-How to use
+How to use this package
 ------
 ```
 def generate(background: Background, source: String, targetAreaInfo: TargetAreaInfo, alignVertical:Vertical, alignHorizontal: Horizontal, setFontInfo: String) {
