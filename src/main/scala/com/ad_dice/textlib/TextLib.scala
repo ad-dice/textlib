@@ -656,9 +656,24 @@ object TextLib extends App {
   /** Mutable Vertical write */
   def mutableVerticalWrite(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, 
     alignVertical: Vertical, alignHorizontal: Horizontal){
+    
+    /** Exception: If x_top == x_bottom */
+    if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
+      Console.out.println( Console.RED + "Warning: WIDTH size is NULL. We set the WIDTH size to " + WidthDefault +" by default" + Console.RESET )
+    }
 
-    val height = targetAreaInfo.yb - targetAreaInfo.yt
-    val width = targetAreaInfo.xb - targetAreaInfo.xt
+    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
+
+    /** Exception: If y_top == y_bottom */
+    if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
+      Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
+    }
+
+    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
+
+
+    val height = y_bottom - targetAreaInfo.yt
+    val width = x_bottom - targetAreaInfo.xt
 
     // Vertical writing
     val text_length_max = height / (width / 2)
@@ -669,18 +684,18 @@ object TextLib extends App {
       val font_size = height / text_length
       //println(font_size, width)
       if(font_size > width){
-        immutableVerticalWrite(g, source, targetAreaInfo.copy(size = width), alignVertical, alignHorizontal)
+        immutableVerticalWrite(g, source, targetAreaInfo.copy(size = width, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
       }
       else{
-        immutableVerticalWrite(g, source, targetAreaInfo.copy(size = font_size), alignVertical, alignHorizontal)
+        immutableVerticalWrite(g, source, targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
         //println(font_size)
       }
     }
 
     else{
-    mutableVerticalWritePluralLines(g, source, targetAreaInfo, alignVertical, alignHorizontal, text_length)
-      }    
-}
+    mutableVerticalWritePluralLines(g, source, targetAreaInfo.copy(xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal, text_length)
+      }
+    }
 
 
 /** Write mutable string on plural lines, sub function of mutableHorizontalWrite() */
@@ -710,12 +725,28 @@ object TextLib extends App {
       }
   }
 
-  /** Mutable Horizontal write */
+    /** Mutable Horizontal write */
   def mutableHorizontalWrite(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, 
     alignVertical: Vertical, alignHorizontal: Horizontal){
 
-    val height = targetAreaInfo.yb - targetAreaInfo.yt
-    val width = targetAreaInfo.xb - targetAreaInfo.xt
+    /** Exception: If x_top == x_bottom */
+    if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
+      Console.out.println( Console.RED + "Warning: WIDTH size is NULL or 1. We set the WIDTH size to " + WidthDefault +" by default" + Console.RESET )
+    }
+
+    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
+    //println(x_bottom)
+
+    /** Exception: If y_top == y_bottom */
+    if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
+      Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
+    }
+
+    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
+
+
+    val height = y_bottom - targetAreaInfo.yt
+    val width = x_bottom - targetAreaInfo.xt
 
     // Horizontal writing
     val text_length_max = width / (height / 2)
@@ -726,16 +757,16 @@ object TextLib extends App {
       val font_size = width / text_length
       //println(font_size, height)
       if(font_size > height){
-        immutableHorizontalWrite(g, source, targetAreaInfo.copy(size = height), alignVertical, alignHorizontal)
+        immutableHorizontalWrite(g, source, targetAreaInfo.copy(size = height, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
       }
       else{
-        immutableHorizontalWrite(g, source, targetAreaInfo.copy(size = font_size), alignVertical, alignHorizontal)
+        immutableHorizontalWrite(g, source, targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
         //println(font_size)
       }
     }
 
     else{
-    mutableHorizontalWritePluralLines(g, source, targetAreaInfo, alignVertical, alignHorizontal, text_length)
+    mutableHorizontalWritePluralLines(g, source, targetAreaInfo.copy(xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal, text_length)
       }    
   }
 }
