@@ -45,16 +45,16 @@ object TextLib extends App {
           g.setFont(font.deriveFont(transform))
           val gap_y = -size / r - size/2
           val gap_x = size / 8
-          g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y)
-          writeVertical(g, text.tail, size, x, y - 3 * size / 4, font, i + 1) 
+          g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y * 3 / 4)
+          writeVertical(g, text.tail, size, x, y - size / 4, font, i + 1) 
         }
         else if (rotationTranslationDownChars(char)) {
           val transform = AffineTransform.getRotateInstance(Math.toRadians(90), 0, 0)
           g.setFont(font.deriveFont(transform))
           val gap_y = -size / r
           val gap_x = size / 8
-          g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y)
-          writeVertical(g, text.tail, size, x, y - 2 * size / 4, font, i + 1)
+          g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y * 3 / 4)
+          writeVertical(g, text.tail, size, x, y - size / 4, font, i + 1)
         }
 
         else if (rotationChars(char)) {
