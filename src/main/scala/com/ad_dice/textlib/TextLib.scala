@@ -669,6 +669,13 @@ object TextLib extends App {
       Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
     }
 
+    /** Exception: if source is NULL we call immutableVerticalWrite function **/
+    if(source.length() == 0){
+      Console.out.println( Console.RED + "Warning: your text is NULL"+ Console.RESET )
+      immutableVerticalWrite(g, source, targetAreaInfo, alignVertical, alignHorizontal)
+      return
+    }
+
     val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
 
 
@@ -740,6 +747,13 @@ object TextLib extends App {
     /** Exception: If y_top == y_bottom */
     if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
       Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
+    }
+
+    /** Exception: if source is NULL we call immutableHorizontalWrite function **/
+    if(source.length() == 0){
+      Console.out.println( Console.RED + "Warning: your text is NULL"+ Console.RESET )
+      immutableHorizontalWrite(g, source, targetAreaInfo, alignVertical, alignHorizontal)
+      return
     }
 
     val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
