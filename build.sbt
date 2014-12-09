@@ -8,14 +8,14 @@ organization := "com.ad_dice.textlib"
 
 profileName := "com.ad_dice"
 
-version := "0.2.3"
+version := "0.2.4"
 
 scalaVersion := "2.11.2"
 
 publishTo <<= version { (v: String) =>
   val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT")) 
-    Some("snapshots" at nexus + "content/repositories/snapshots") 
+  if (v.trim.endsWith("SNAPSHOT"))
+    Some("snapshots" at nexus + "content/repositories/snapshots")
   else
     Some("releases"  at nexus + "service/local/staging/deploy/maven2")
 }
