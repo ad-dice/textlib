@@ -120,7 +120,7 @@ object TextLib extends App {
       Console.out.println( Console.RED + "Warning: FONT size is NULL. We set the FONT size to " + FontDefault +" by default" + Console.RESET )
     }
 
-    val font_size = if(targetAreaInfo.size == 0){FontDefault}else{targetAreaInfo.size}
+    val font_size = if(targetAreaInfo.size == 0 || targetAreaInfo.size == null){FontDefault}else{targetAreaInfo.size}
 
 
     /** Exception: If x_top == x_bottom */
