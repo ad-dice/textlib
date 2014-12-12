@@ -30,7 +30,10 @@ object TextLib extends App {
 
     /** write strings by vertical */
     def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int): Unit = {
-      val font = g.getFont.deriveFont(size.toFloat)
+
+      /** Changing the Font Style **/
+      //val font = g.getFont.deriveFont(size.toFloat)
+      val font = g.getFont.deriveFont(Font.BOLD+Font.ITALIC, size.toFloat)
       writeVertical(g, text, size, x, y, font)
       g.setFont(font)
     }
