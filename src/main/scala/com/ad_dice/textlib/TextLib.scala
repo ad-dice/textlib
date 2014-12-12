@@ -103,7 +103,7 @@ object TextLib extends App {
 
     /** write strings by horizontal */
     def writeHorizontal(g: Graphics2D, text: String, size: Int, x: Int, y: Int) {
-      g.setFont(g.getFont.deriveFont(size.toFloat))
+      g.setFont(g.getFont.deriveFont(Font.BOLD+Font.ITALIC, size.toFloat))
       g.drawString(text, x, y + size)
     }
 
