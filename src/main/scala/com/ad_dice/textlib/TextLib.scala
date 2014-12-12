@@ -7,11 +7,12 @@ import java.awt.font.FontRenderContext
 import java.io.File
 import javax.imageio.ImageIO
 
-case class TargetAreaInfo(xt: Int, yt: Int, xb: Int, yb: Int, size: Int)
+// default font size 10 is set to avoid null.
+case class TargetAreaInfo(xt: Int, yt: Int, xb: Int, yb: Int, size: Int = 10)
 
 object TextLib extends App {
 
-    val FontDefault = 10
+    val FontDefault = 10 // This value is used to override wrong value.
     val WidthDefault = 2
     val HeightDefault = 2
 
@@ -116,11 +117,11 @@ object TextLib extends App {
   def immutableVerticalWrite(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, alignVertical: Vertical, alignHorizontal: Horizontal){
 
     /** Exception: If font size is not right number */
-    if(targetAreaInfo.size == 0 || targetAreaInfo.size == null){
+    if(targetAreaInfo.size == 0){
       Console.out.println( Console.RED + "Warning: FONT size is NULL. We set the FONT size to " + FontDefault +" by default" + Console.RESET )
     }
 
-    val font_size = if(targetAreaInfo.size == 0 || targetAreaInfo.size == null){FontDefault}else{targetAreaInfo.size}
+    val font_size = if(targetAreaInfo.size == 0){FontDefault}else{targetAreaInfo.size}
 
 
     /** Exception: If x_top == x_bottom */
@@ -376,11 +377,11 @@ object TextLib extends App {
   def immutableHorizontalWrite(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, alignVertical: Vertical, alignHorizontal: Horizontal){
 
     /** Exception: If font size is not right number */
-    if(targetAreaInfo.size == 0 ||  targetAreaInfo.size == null){
+    if(targetAreaInfo.size == 0){
       Console.out.println( Console.RED + "Warning: FONT size is NULL. We set the FONT size to " + FontDefault +" by default" + Console.RESET )
     }
 
-    val font_size = if(targetAreaInfo.size == 0 ||  targetAreaInfo.size == null){FontDefault}else{targetAreaInfo.size}
+    val font_size = if(targetAreaInfo.size == 0){FontDefault}else{targetAreaInfo.size}
 
 
     /** Exception: If x_top == x_bottom */
