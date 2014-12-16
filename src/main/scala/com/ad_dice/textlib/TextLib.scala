@@ -11,10 +11,9 @@ case class TargetAreaInfo(xt: Int, yt: Int, xb: Int, yb: Int, size: Int)
 
 object TextLib extends App {
 
-    val FontDefault = 10
     val WidthDefault = 2
     val HeightDefault = 2
-
+    def defaultFontSize: Int = 10 //FontDefault
     /**  definitions for vertical writing */
     def rotationTranslationUpChars = Set('（')
     def rotationTranslationDownChars = Set('）')
@@ -31,8 +30,8 @@ object TextLib extends App {
     /** write strings by vertical */
     def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int): Unit = {
       val font = g.getFont.deriveFont(size.toFloat)
-      writeVertical(g, text, size, x, y, font)
       g.setFont(font)
+      writeVertical(g, text, size, x, y, font)
     }
 
     def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int, font:Font, i: Int = 0): Unit = {
@@ -116,26 +115,22 @@ object TextLib extends App {
   def immutableVerticalWrite(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, alignVertical: Vertical, alignHorizontal: Horizontal){
 
     /** Exception: If font size is not right number */
-    if(targetAreaInfo.size == 0 || targetAreaInfo.size == null){
-      Console.out.println( Console.RED + "Warning: FONT size is NULL. We set the FONT size to " + FontDefault +" by default" + Console.RESET )
-    }
-
-    val font_size = if(targetAreaInfo.size == 0 || targetAreaInfo.size == null){FontDefault}else{targetAreaInfo.size}
+    val font_size = if(targetAreaInfo.size == 0){
+      Console.out.println( Console.RED + "Warning: FONT size is NULL. We set the FONT size to " + defaultFontSize +" by default" + Console.RESET )
+      defaultFontSize
+    }else{targetAreaInfo.size}
 
 
     /** Exception: If x_top == x_bottom */
-    if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
+    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
       Console.out.println( Console.RED + "Warning: WIDTH size is NULL. We set the WIDTH size to " + WidthDefault +" by default" + Console.RESET )
-    }
-
-    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
+      WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
 
     /** Exception: If y_top == y_bottom */
-    if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
+    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
       Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
-    }
-
-    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
+      WidthDefault+ targetAreaInfo.yt
+    }else{targetAreaInfo.yb}
 
 
     //** If width or height is shorter than Font size, we call MUTABLE function */
@@ -376,12 +371,11 @@ object TextLib extends App {
   def immutableHorizontalWrite(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, alignVertical: Vertical, alignHorizontal: Horizontal){
 
     /** Exception: If font size is not right number */
-    if(targetAreaInfo.size == 0 ||  targetAreaInfo.size == null){
-      Console.out.println( Console.RED + "Warning: FONT size is NULL. We set the FONT size to " + FontDefault +" by default" + Console.RESET )
+    if(targetAreaInfo.size == 0){
+      Console.out.println( Console.RED + "Warning: FONT size is 0. We set the FONT size to " + defaultFontSize +" by default" + Console.RESET )
     }
 
-    val font_size = if(targetAreaInfo.size == 0 ||  targetAreaInfo.size == null){FontDefault}else{targetAreaInfo.size}
-
+    val font_size = if(targetAreaInfo.size == 0){defaultFontSize}else{targetAreaInfo.size}
 
     /** Exception: If x_top == x_bottom */
     if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
