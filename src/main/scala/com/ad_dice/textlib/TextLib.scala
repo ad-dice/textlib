@@ -777,4 +777,149 @@ object TextLib extends App {
     mutableHorizontalWritePluralLines(g, source, targetAreaInfo.copy(xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal, text_length)
       }
   }
+
+
+  def writeVerticalNextLine(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, 
+    alignVertical: Vertical, alignHorizontal: Horizontal): Int = {
+
+      val font_size = if(targetAreaInfo.size == 0){
+        defaultFontSize
+      } else{
+        targetAreaInfo.size
+      }
+
+      val width = (targetAreaInfo.xb - targetAreaInfo.xt).abs
+      val heightp = (targetAreaInfo.yb - targetAreaInfo.yt).abs
+      val height = if(heightp != 0) heightp else 1
+
+      val letter_size = source.length()
+      val text_length = font_size * letter_size
+
+      //println(width, height, font_size, letter_size, text_length)
+
+      
+
+      alignVertical match {
+        case Vertical.Top =>
+        val line_letter_size = height / font_size
+        val text_grouped_list = source.grouped(line_letter_size).toList
+
+        alignHorizontal match {
+          
+          case Horizontal.Right =>
+          if(text_length <= height){
+            writeVertical(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yt)
+          }
+          else{
+            for(i <- 0 to text_grouped_list.size - 1)
+            writeVertical(g, text_grouped_list(i), font_size, targetAreaInfo.xt - font_size * i, targetAreaInfo.yt)
+          }
+
+        }
+
+        case Vertical.Bottom =>
+        val line_letter_size = height / font_size
+
+        alignHorizontal match {
+          
+          case Horizontal.Right =>
+          val text_grouped_list = source.grouped(line_letter_size).toList
+
+          if(text_length <= height){
+            writeVertical(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yb - text_length)
+          }
+          else{
+            for(i <- 0 to text_grouped_list.size - 1)
+            writeVertical(g, text_grouped_list(i), font_size, targetAreaInfo.xt - font_size * i,
+              targetAreaInfo.yb - text_grouped_list(i).size * font_size)
+          }
+
+          case _ => //todo
+
+        }
+
+      }
+
+      /** calculate how many lines needed to write */
+      if(text_length <= height){
+        val lineNumbers = 1
+        return lineNumbers
+      }
+      else{
+        val lineNumbers = if(text_length % height == 0) text_length / height else text_length / height + 1
+        return lineNumbers
+      }
+
+    }
+
+  def writeHorizontalNextLine(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, 
+    alignVertical: Vertical, alignHorizontal: Horizontal): Int = {
+      val font_size = if(targetAreaInfo.size == 0){
+        defaultFontSize
+      }else{
+        targetAreaInfo.size
+      }
+
+      val widthp = (targetAreaInfo.xb - targetAreaInfo.xt).abs
+      val width = if(widthp != 0) heightp else 1
+
+      val height = (targetAreaInfo.yb - targetAreaInfo.yt).abs
+
+      val letter_size = source.length()
+      val text_length = font_size * letter_size
+
+      //println(width, height, font_size, letter_size, text_length)
+
+      
+
+      alignHorizontal match {
+        case Horizontal.Left =>
+        val line_letter_size = width / font_size
+        val text_grouped_list = source.grouped(line_letter_size).toList
+
+        alignVertical match {
+          
+          case Vertical.Top =>
+          if(text_length <= height){
+            writeHorizontal(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yt)
+          }
+          else{
+            for(i <- 0 to text_grouped_list.size - 1)
+            writeHorizontal(g, text_grouped_list(i), font_size, targetAreaInfo.xt, targetAreaInfo.yt + font_size * i)
+          }
+
+        }
+
+        case Horizontal.Right =>
+        val line_letter_size = width / font_size
+
+        alignVertical match {
+          
+          case Vertical.Top =>
+          val text_grouped_list = source.grouped(line_letter_size).toList
+
+          if(text_length <= height){
+            writeHorizontal(g, source, font_size, targetAreaInfo.xb - text_length, targetAreaInfo.yt)
+          }
+          else{
+            for(i <- 0 to text_grouped_list.size - 1)
+            writeHorizontal(g, text_grouped_list(i), font_size, targetAreaInfo.xb - text_grouped_list(i).size * font_size,
+              targetAreaInfo.yt + font_size * i)
+          }
+        }
+
+      }
+
+      /** calculate how many lines needed to write */
+      if(text_length <= width){
+        val lineNumbers = 1
+        return lineNumbers
+      }
+      else{
+        val lineNumbers = if(text_length % width == 0) text_length / width else text_length / width + 1
+        return lineNumbers
+      }
+
+    }
+
 }
