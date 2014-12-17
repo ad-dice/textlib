@@ -861,7 +861,7 @@ object TextLib extends App {
       }
 
       val widthp = (targetAreaInfo.xb - targetAreaInfo.xt).abs
-      val width = if(widthp != 0) heightp else 1
+      val width = if(widthp != 0) widthp else 1
 
       val height = (targetAreaInfo.yb - targetAreaInfo.yt).abs
 
