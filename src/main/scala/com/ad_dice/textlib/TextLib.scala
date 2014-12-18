@@ -779,7 +779,7 @@ object TextLib extends App {
   }
 
 
-  def writeVerticalNextLine(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, 
+  def writeVerticalNextLine(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo,
     alignVertical: Vertical, alignHorizontal: Horizontal): Int = {
 
       val font_size = if(targetAreaInfo.size == 0){
@@ -797,7 +797,7 @@ object TextLib extends App {
 
       //println(width, height, font_size, letter_size, text_length)
 
-      
+
 
       alignVertical match {
         case Vertical.Top =>
@@ -805,7 +805,7 @@ object TextLib extends App {
         val text_grouped_list = source.grouped(line_letter_size).toList
 
         alignHorizontal match {
-          
+
           case Horizontal.Right =>
           if(text_length <= height){
             writeVertical(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yt)
@@ -821,7 +821,7 @@ object TextLib extends App {
         val line_letter_size = height / font_size
 
         alignHorizontal match {
-          
+
           case Horizontal.Right =>
           val text_grouped_list = source.grouped(line_letter_size).toList
 
@@ -852,7 +852,7 @@ object TextLib extends App {
 
     }
 
-  def writeHorizontalNextLine(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, 
+  def writeHorizontalNextLine(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo,
     alignVertical: Vertical, alignHorizontal: Horizontal): Int = {
       val font_size = if(targetAreaInfo.size == 0){
         defaultFontSize
@@ -870,7 +870,7 @@ object TextLib extends App {
 
       //println(width, height, font_size, letter_size, text_length)
 
-      
+
 
       alignHorizontal match {
         case Horizontal.Left =>
@@ -878,7 +878,7 @@ object TextLib extends App {
         val text_grouped_list = source.grouped(line_letter_size).toList
 
         alignVertical match {
-          
+
           case Vertical.Top =>
           if(text_length <= height){
             writeHorizontal(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yt)
@@ -894,7 +894,7 @@ object TextLib extends App {
         val line_letter_size = width / font_size
 
         alignVertical match {
-          
+
           case Vertical.Top =>
           val text_grouped_list = source.grouped(line_letter_size).toList
 
@@ -919,7 +919,42 @@ object TextLib extends App {
         val lineNumbers = if(text_length % width == 0) text_length / width else text_length / width + 1
         return lineNumbers
       }
-
     }
+
+  def countVerticalNextLine(source: String, targetAreaInfo: TargetAreaInfo,
+  alignVertical: Vertical, alignHorizontal: Horizontal): Int = {
+
+  val font_size = if(targetAreaInfo.size == 0){
+    defaultFontSize
+  }else{
+    targetAreaInfo.size
+  }
+
+  val width = (targetAreaInfo.xb - targetAreaInfo.xt).abs
+  val heightp = (targetAreaInfo.yb - targetAreaInfo.yt).abs
+  val height = if(heightp != 0) heightp else 1
+  val letter_size = source.length()
+  val text_length = font_size * letter_size
+
+  /** calculate how many lines needed to write */
+  val lineNumbers = if(text_length <= height){1}
+                    else{if(text_length % height == 0) text_length / height else text_length / height + 1}
+  return lineNumbers
+}
+
+def countHorizontalNextLine(source: String, targetAreaInfo: TargetAreaInfo): Int = {
+
+  val font_size = if(targetAreaInfo.size == 0){defaultFontSize}
+                  else{targetAreaInfo.size}
+  val widthp = (targetAreaInfo.xb - targetAreaInfo.xt).abs
+  val width = if(widthp != 0) widthp else 1
+  val height = (targetAreaInfo.yb - targetAreaInfo.yt).abs
+  val letter_size = source.length()
+  val text_length = font_size * letter_size
+  /** calculate how many lines needed to write */
+  val lineNumbers = if(text_length <= width){1}
+                    else{ if(text_length % width == 0) text_length / width else text_length / width + 1}
+  return lineNumbers
+  }
 
 }
