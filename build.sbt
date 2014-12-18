@@ -8,7 +8,7 @@ organization := "com.ad_dice.textlib"
 
 profileName := "com.ad_dice"
 
-version := "0.2.5"
+version := "0.2.7"
 
 scalaVersion := "2.11.2"
 
