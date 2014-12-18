@@ -921,8 +921,7 @@ object TextLib extends App {
       }
     }
 
-  def countVerticalNextLine(source: String, targetAreaInfo: TargetAreaInfo,
-  alignVertical: Vertical, alignHorizontal: Horizontal): Int = {
+  def countVerticalNextLine(source: String, targetAreaInfo: TargetAreaInfo): Int = {
 
   val font_size = if(targetAreaInfo.size == 0){
     defaultFontSize
