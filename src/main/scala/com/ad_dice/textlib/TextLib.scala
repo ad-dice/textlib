@@ -17,7 +17,8 @@ object TextLib extends App {
     /**  definitions for vertical writing */
     def rotationTranslationUpChars = Set('（', '「')
     def rotationTranslationDownChars = Set('）', '」')
-    def rotationChars = Set('(', ')', '[',  ']', '「', '」', 'ー')
+    def rotationChars = Set('(', ')', '[',  ']', '「', '」', 'ー', 
+      '-', '〜', '~', '‐', '‑', '‒', '–', '―', '―', '−', 'ー', 'ｰ', '一')
     def translationChars = Set(',', '.', '，', '。', '.')
     def translationSmallChars = Set('ゃ', 'ょ', 'ゅ', 'っ', 'ぁ', 'ぇ', 'ぃ', 'ぉ', 'ぅ',
       'ャ', 'ョ', 'ュ', 'ッ', 'ァ', 'ェ', 'ィ', 'ォ', 'ゥ')
