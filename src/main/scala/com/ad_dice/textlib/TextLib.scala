@@ -15,8 +15,8 @@ object TextLib extends App {
     val HeightDefault = 2
     def defaultFontSize: Int = 10 //FontDefault
     /**  definitions for vertical writing */
-    def rotationTranslationUpChars = Set('（')
-    def rotationTranslationDownChars = Set('）')
+    def rotationTranslationUpChars = Set('（', '「')
+    def rotationTranslationDownChars = Set('）', '」')
     def rotationChars = Set('(', ')', '[',  ']', '「', '」', 'ー')
     def translationChars = Set(',', '.', '，', '。', '.')
     def translationSmallChars = Set('ゃ', 'ょ', 'ゅ', 'っ', 'ぁ', 'ぇ', 'ぃ', 'ぉ', 'ぅ',
