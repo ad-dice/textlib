@@ -151,16 +151,17 @@ object TextLib extends App {
     val text_length = font_size * letter_size
 
 
+    // tentatively commented out to avoid circular referrence with immutable* and mutable*
     //* if source is not fit rectangle, we call mutable function */
-    if(letter_size > (width / font_size).toInt * (height / font_size).toInt){
-      Console.out.println( Console.RED + "Warning: Your text is not fit into rectangle. We set FONT to appropriate size. " + Console.RESET )
-      Console.out.println( Console.RED + "letter_size > (width / font_size).toInt * (height / font_size).toInt" + Console.RESET )
+    // if(letter_size > (width / font_size).toInt * (height / font_size).toInt){
+    //   Console.out.println( Console.RED + "Warning: Your text is not fit into rectangle. We set FONT to appropriate size. " + Console.RESET )
+    //   Console.out.println( Console.RED + "letter_size > (width / font_size).toInt * (height / font_size).toInt" + Console.RESET )
 
-      mutableVerticalWrite(g, source,
-        targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom),
-        alignVertical, alignHorizontal)
-      return;
-    }
+    //   mutableVerticalWrite(g, source,
+    //     targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom),
+    //     alignVertical, alignHorizontal)
+    //   return;
+    // }
 
     // line_size_height
     val one_line_size_height = height / font_size
@@ -393,15 +394,15 @@ object TextLib extends App {
 
     val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
 
-
+    // tentatively commented out to avoid circular referrence with immutable* and mutable*
     //** If width or height is shorter than Font size, we call MUTABLE function */
-    if(x_bottom - targetAreaInfo.xt < font_size || y_bottom - targetAreaInfo.yt < font_size){
-      Console.out.println( Console.RED + "Warning: HEIGHT or WIDTH size is shorter than FONT size. We set FONT to appropriate size " + Console.RESET )
-      mutableHorizontalWrite(g, source,
-        targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom),
-        alignVertical, alignHorizontal)
-      return;
-    }
+    // if(x_bottom - targetAreaInfo.xt < font_size || y_bottom - targetAreaInfo.yt < font_size){
+    //   Console.out.println( Console.RED + "Warning: HEIGHT or WIDTH size is shorter than FONT size. We set FONT to appropriate size " + Console.RESET )
+    //   mutableHorizontalWrite(g, source,
+    //     targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom),
+    //     alignVertical, alignHorizontal)
+    //   return;
+    // }
 
     val width = targetAreaInfo.xb - targetAreaInfo.xt
     val height = targetAreaInfo.yb - targetAreaInfo.yt
@@ -409,17 +410,17 @@ object TextLib extends App {
     val letter_size = source.length()
     val text_length = font_size * letter_size
 
+    // tentatively commented out to avoid circular referrence with immutable* and mutable*
     //* if source is not fit rectangle, we call mutable function */
-    if(letter_size > (width / font_size).toInt * (height / font_size).toInt){
-      Console.out.println( Console.RED + "Warning: Your text is not fit into rectangle. We set FONT to appropriate size " + Console.RESET )
-      Console.out.println( Console.RED + "letter_size > (width / font_size).toInt * (height / font_size).toInt" + Console.RESET )
+    // if(letter_size > (width / font_size).toInt * (height / font_size).toInt){
+    //   Console.out.println( Console.RED + "Warning: Your text is not fit into rectangle. We set FONT to appropriate size " + Console.RESET )
+    //   Console.out.println( Console.RED + "letter_size > (width / font_size).toInt * (height / font_size).toInt" + Console.RESET )
 
-
-      mutableHorizontalWrite(g, source,
-        targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom),
-        alignVertical, alignHorizontal)
-      return;
-    }
+    //   mutableHorizontalWrite(g, source,
+    //     targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom),
+    //     alignVertical, alignHorizontal)
+    //   return;
+    // }
 
     // line_size_width
     val one_line_size_width = width / font_size
