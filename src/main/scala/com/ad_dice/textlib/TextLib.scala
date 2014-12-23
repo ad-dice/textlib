@@ -133,15 +133,15 @@ object TextLib extends App {
       WidthDefault+ targetAreaInfo.yt
     }else{targetAreaInfo.yb}
 
-
+    // tentatively commented out to avoid circular referrence with immutable* and mutable*
     //** If width or height is shorter than Font size, we call MUTABLE function */
-    if(x_bottom - targetAreaInfo.xt < font_size || y_bottom - targetAreaInfo.yt < font_size){
-      Console.out.println( Console.RED + "Warning: HEIGHT or WIDTH size is shorter than FONT size. We set FONT to appropriate size " + Console.RESET )
-      mutableVerticalWrite(g, source,
-        targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom),
-        alignVertical, alignHorizontal)
-      return;
-    }
+    // if(x_bottom - targetAreaInfo.xt < font_size || y_bottom - targetAreaInfo.yt < font_size){
+    //   Console.out.println( Console.RED + "Warning: HEIGHT or WIDTH size is shorter than FONT size. We set FONT to appropriate size " + Console.RESET )
+    //   mutableVerticalWrite(g, source,
+    //     targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom),
+    //     alignVertical, alignHorizontal)
+    //   return;
+    // }
 
 
     val width = targetAreaInfo.xb - targetAreaInfo.xt
