@@ -675,15 +675,15 @@ object TextLib extends App {
 
 
     val height = (y_bottom - targetAreaInfo.yt).abs
-    val width = (x_bottom - targetAreaInfo.xt).abs
+    val width = if((x_bottom - targetAreaInfo.xt).abs != 0) (x_bottom - targetAreaInfo.xt).abs else 1
 
     // Vertical writing
-    val text_length_max = if (width != 0)  {height / (width / 2)} else {height}
-    val text_length = source.length
+    val text_length_max = height / (width / 2)
+    val text_length = if(source.length != 0) source.length else 1
     //println(text_length, text_length_max)
     // write on one line
     if(text_length <= text_length_max){
-      val font_size = if(text_length != 0)  {height /  text_length} else 1
+      val font_size = height / text_length
       //println(font_size, width)
       if(font_size > width){
         immutableVerticalWrite(g, source, targetAreaInfo.copy(size = width, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
@@ -713,12 +713,12 @@ object TextLib extends App {
       return
     }
 
-    val text_length_max = if(height != 0 || i != 0) {width / (height / i)} else width
+    val text_length_max = width / (height / i)
 
     //println(height/i, text_length_max)
 
     if(text_length <= text_length_max * i){
-        val font_size = if(i != 0) {height / i} else defaultFontSize
+        val font_size = height / i
         //println(text_length, text_length_max, font_size)
         immutableHorizontalWrite(g, source, targetAreaInfo.copy(size = font_size), alignVertical, alignHorizontal)
       }
@@ -758,12 +758,12 @@ object TextLib extends App {
     val width = (x_bottom - targetAreaInfo.xt).abs
 
     // Horizontal writing
-    val text_length_max = if(height !=0 ) (width / (height / 2)) else width
-    val text_length = source.length
+    val text_length_max = width / (height / 2)
+    val text_length = source.length()
     //println(text_length, text_length_max)
     // write on one line
     if(text_length <= text_length_max){
-      val font_size = if (text_length != 0 )(width / text_length) else width
+      val font_size = width / text_length
       //println(font_size, height)
       if(font_size > height){
         immutableHorizontalWrite(g, source, targetAreaInfo.copy(size = height, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
@@ -802,7 +802,7 @@ object TextLib extends App {
 
       alignVertical match {
         case Vertical.Top =>
-        val line_letter_size = if(font_size != 0) (height / font_size) else height
+        val line_letter_size = height / font_size
         val text_grouped_list = source.grouped(line_letter_size).toList
 
         alignHorizontal match {
@@ -872,7 +872,7 @@ object TextLib extends App {
 
       alignHorizontal match {
         case Horizontal.Left =>
-        val line_letter_size = if (font_size != 0)(width / font_size) else width
+        val line_letter_size = width / font_size
         val text_grouped_list = source.grouped(line_letter_size).toList
 
         alignVertical match {
