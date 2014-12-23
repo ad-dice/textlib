@@ -841,15 +841,8 @@ object TextLib extends App {
       }
 
       /** calculate how many lines needed to write */
-      if(text_length <= height){
-        val lineNumbers = 1
-        return lineNumbers
-      }
-      else{
-        val lineNumbers = if(text_length % height == 0) text_length / height else text_length / height + 1
-        return lineNumbers
-      }
-
+      val lineNumbers = if (text_length == 0) 0 else if(text_length <= height) 1 else (if(text_length % height == 0) text_length / height else (text_length / height) + 1)
+      return lineNumbers
     }
 
   def writeHorizontalNextLine(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo,
@@ -909,14 +902,8 @@ object TextLib extends App {
       }
 
       /** calculate how many lines needed to write */
-      if(text_length <= width){
-        val lineNumbers = 1
-        return lineNumbers
-      }
-      else{
-        val lineNumbers = if(text_length % width == 0) text_length / width else text_length / width + 1
-        return lineNumbers
-      }
+      val lineNumbers = if(text_length==0) 0 else (if(text_length <= width) 1 else {if(text_length % width == 0) text_length / width else text_length / width + 1})
+      return lineNumbers
     }
 
   def countVerticalNextLine(source: String, targetAreaInfo: TargetAreaInfo): Int = {
@@ -930,12 +917,11 @@ object TextLib extends App {
   val width = (targetAreaInfo.xb - targetAreaInfo.xt).abs
   val heightp = (targetAreaInfo.yb - targetAreaInfo.yt).abs
   val height = if(heightp != 0) heightp else 1
-  val letter_size = source.length()
+  val letter_size = source.length
   val text_length = font_size * letter_size
 
   /** calculate how many lines needed to write */
-  val lineNumbers = if(text_length <= height){1}
-                    else{if(text_length % height == 0) text_length / height else text_length / height + 1}
+  val lineNumbers = if(letter_size==0) 0 else (if(text_length <= height){1} else{if(text_length % height == 0) text_length / height else text_length / height + 1})
   return lineNumbers
 }
 
@@ -949,8 +935,7 @@ def countHorizontalNextLine(source: String, targetAreaInfo: TargetAreaInfo): Int
   val letter_size = source.length
   val text_length = font_size * letter_size
   /** calculate how many lines needed to write */
-  val lineNumbers = if(text_length <= width){1}
-                    else{ if(text_length % width == 0) text_length / width else text_length / width + 1}
+  val lineNumbers = if(letter_size==0) 0 else ( if(text_length <= width){1} else{ if(text_length % width == 0) text_length / width else text_length / width + 1})
   return lineNumbers
   }
 
