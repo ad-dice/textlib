@@ -674,16 +674,16 @@ object TextLib extends App {
     val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
 
 
-    val height = y_bottom - targetAreaInfo.yt
-    val width = x_bottom - targetAreaInfo.xt
+    val height = (y_bottom - targetAreaInfo.yt).abs
+    val width = (x_bottom - targetAreaInfo.xt).abs
 
     // Vertical writing
-    val text_length_max = height / (width / 2)
-    val text_length = source.length()
+    val text_length_max = if (width != 0)  {height / (width / 2)} else {height}
+    val text_length = source.length
     //println(text_length, text_length_max)
     // write on one line
     if(text_length <= text_length_max){
-      val font_size = height / text_length
+      val font_size = if(text_length != 0)  {height /  text_length} else 1
       //println(font_size, width)
       if(font_size > width){
         immutableVerticalWrite(g, source, targetAreaInfo.copy(size = width, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
@@ -703,8 +703,8 @@ object TextLib extends App {
 /** Write mutable string on plural lines, sub function of mutableHorizontalWrite() */
   def mutableHorizontalWritePluralLines(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, alignVertical: Vertical, alignHorizontal: Horizontal,
     text_length:Int, i:Int = 1){
-    val height = targetAreaInfo.yb - targetAreaInfo.yt
-    val width = targetAreaInfo.xb - targetAreaInfo.xt
+    val height = (targetAreaInfo.yb - targetAreaInfo.yt).abs
+    val width = (targetAreaInfo.xb - targetAreaInfo.xt).abs
 
     if(height / i < 1){
       Console.out.println( Console.RED + "Warning: Your HEIGHT size is too small to write." + Console.RESET )
@@ -713,12 +713,12 @@ object TextLib extends App {
       return
     }
 
-    val text_length_max = width / (height / i)
+    val text_length_max = if(height != 0 || i != 0) {width / (height / i)} else width
 
     //println(height/i, text_length_max)
 
     if(text_length <= text_length_max * i){
-        val font_size = height / i
+        val font_size = if(i != 0) {height / i} else defaultFontSize
         //println(text_length, text_length_max, font_size)
         immutableHorizontalWrite(g, source, targetAreaInfo.copy(size = font_size), alignVertical, alignHorizontal)
       }
@@ -754,16 +754,16 @@ object TextLib extends App {
     val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
 
 
-    val height = y_bottom - targetAreaInfo.yt
-    val width = x_bottom - targetAreaInfo.xt
+    val height = (y_bottom - targetAreaInfo.yt).abs
+    val width = (x_bottom - targetAreaInfo.xt).abs
 
     // Horizontal writing
-    val text_length_max = width / (height / 2)
-    val text_length = source.length()
+    val text_length_max = if(height !=0 ) (width / (height / 2)) else width
+    val text_length = source.length
     //println(text_length, text_length_max)
     // write on one line
     if(text_length <= text_length_max){
-      val font_size = width / text_length
+      val font_size = if (text_length != 0 )(width / text_length) else width
       //println(font_size, height)
       if(font_size > height){
         immutableHorizontalWrite(g, source, targetAreaInfo.copy(size = height, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
@@ -793,7 +793,7 @@ object TextLib extends App {
       val heightp = (targetAreaInfo.yb - targetAreaInfo.yt).abs
       val height = if(heightp != 0) heightp else 1
 
-      val letter_size = source.length()
+      val letter_size = source.length
       val text_length = font_size * letter_size
 
       //println(width, height, font_size, letter_size, text_length)
@@ -802,7 +802,7 @@ object TextLib extends App {
 
       alignVertical match {
         case Vertical.Top =>
-        val line_letter_size = height / font_size
+        val line_letter_size = if(font_size != 0) (height / font_size) else height
         val text_grouped_list = source.grouped(line_letter_size).toList
 
         alignHorizontal match {
@@ -815,7 +815,6 @@ object TextLib extends App {
             for(i <- 0 to text_grouped_list.size - 1)
             writeVertical(g, text_grouped_list(i), font_size, targetAreaInfo.xt - font_size * i, targetAreaInfo.yt)
           }
-
         }
 
         case Vertical.Bottom =>
@@ -871,11 +870,9 @@ object TextLib extends App {
 
       //println(width, height, font_size, letter_size, text_length)
 
-
-
       alignHorizontal match {
         case Horizontal.Left =>
-        val line_letter_size = width / font_size
+        val line_letter_size = if (font_size != 0)(width / font_size) else width
         val text_grouped_list = source.grouped(line_letter_size).toList
 
         alignVertical match {
@@ -949,7 +946,7 @@ def countHorizontalNextLine(source: String, targetAreaInfo: TargetAreaInfo): Int
   val widthp = (targetAreaInfo.xb - targetAreaInfo.xt).abs
   val width = if(widthp != 0) widthp else 1
   val height = (targetAreaInfo.yb - targetAreaInfo.yt).abs
-  val letter_size = source.length()
+  val letter_size = source.length
   val text_length = font_size * letter_size
   /** calculate how many lines needed to write */
   val lineNumbers = if(text_length <= width){1}
