@@ -675,11 +675,11 @@ object TextLib extends App {
 
 
     val height = (y_bottom - targetAreaInfo.yt).abs
-    val width = if((x_bottom - targetAreaInfo.xt).abs != 0) (x_bottom - targetAreaInfo.xt).abs else 1
+    val width = if((x_bottom - targetAreaInfo.xt).abs != 0) (x_bottom - targetAreaInfo.xt).abs else 2
 
     // Vertical writing
     val text_length_max = height / (width / 2)
-    val text_length = if(source.length != 0) source.length else 1
+    val text_length = if(source.length != 0) source.length else 2
     //println(text_length, text_length_max)
     // write on one line
     if(text_length <= text_length_max){
