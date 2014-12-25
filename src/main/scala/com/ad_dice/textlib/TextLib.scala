@@ -15,9 +15,9 @@ object TextLib extends App {
     val HeightDefault = 2
     def defaultFontSize: Int = 10 //FontDefault
     /**  definitions for vertical writing */
-    def rotationTranslationUpChars = Set('（', '「','『')
-    def rotationTranslationDownChars = Set('）', '」', '』')
-    def rotationChars = Set('(', ')', '[',  ']', '「', '」', '『', '』', '【', '】',
+    def rotationTranslationUpChars = Set('（', '「','『','【')
+    def rotationTranslationDownChars = Set('）', '」', '』','】')
+    def rotationChars = Set('(', ')', '[',  ']',
       '-', '〜', '~', '‐', '‑', '‒', '–', '―', '−', 'ー', 'ｰ', '一')
     def translationChars = Set(',', '.', '，', '。', '.')
     def translationSmallChars = Set('ゃ', 'ょ', 'ゅ', 'っ', 'ぁ', 'ぇ', 'ぃ', 'ぉ', 'ぅ',
@@ -38,7 +38,8 @@ object TextLib extends App {
     def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int, font:Font, i: Int = 0): Unit = {
       if (text.nonEmpty && size != 0 && g.getFontMetrics(font).stringWidth(text.head.toString) > 0) {
         val char = text.head
-        val r = size / g.getFontMetrics(font).stringWidth(char.toString)
+        val r = if(g.getFontMetrics(font).stringWidth(char.toString) == 0) 1
+                else (size / g.getFontMetrics(font).stringWidth(char.toString))
 
         if (rotationTranslationUpChars(char)) {
           val transform = AffineTransform.getRotateInstance(Math.toRadians(90), 0, 0)
@@ -61,7 +62,7 @@ object TextLib extends App {
           val transform = AffineTransform.getRotateInstance(Math.toRadians(90), 0, 0)
           g.setFont(font.deriveFont(transform))
           val gap_y = -size / r
-          val gap_x = size / 8
+          val gap_x = size / 4
           g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y)
           writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
