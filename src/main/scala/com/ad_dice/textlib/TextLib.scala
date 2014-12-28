@@ -14,13 +14,22 @@ object TextLib extends App {
     val WidthDefault = 2
     val HeightDefault = 2
     def defaultFontSize: Int = 10 //FontDefault
+
     /**  definitions for vertical writing */
-    def rotationTranslationUpChars = Set('（', '「','『','【')
-    def rotationTranslationDownChars = Set('）', '」', '』','】')
-    def rotationChars = Set('(', ')', '［',  '］',
-      '-', '〜', '~', '‐', '‑', '‒', '–', '―', '−', 'ー','ｰ', """＝""",
-      """《""","""》""","""〈""" ,"""〉""","""{""","""}""","""〔""","""〕""")
-    def translationChars = Set(',', '.', '，', '。', '.')
+    /**  no need to rotate, case match */
+    def rotationAlignUpChars = Set('(', '（', '「', '『', '【', '［', '[',
+      '｛', '{', '〔', '＜', '<', '［', '《', '〖', '〈')
+    def rotationAlignDownChars = Set(')', '）', '」', '』','】', '］', ']',
+    '｝', '}', '〕', '＞', '>', '］', '》', '〗', '〉')
+    def rotationAlignRightChars = Set('ー', '＝', '−')
+    def kudouTen = Set('、', '。')
+
+    /** need to rotate */
+    def rotationChars = Set('-', '‐', '‑', '‒', '–', '―','ｰ')
+    def rotationTranslationUpDown = Set('〜', '~')
+    
+    /** need to translate */
+    def translationChars = Set(',', '.', '，', '.')
     def translationSmallChars = Set('ゃ', 'ょ', 'ゅ', 'っ', 'ぁ', 'ぇ', 'ぃ', 'ぉ', 'ぅ',
       'ャ', 'ョ', 'ュ', 'ッ', 'ァ', 'ェ', 'ィ', 'ォ', 'ゥ')
     def halfwidthAlphabet = Set('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
@@ -29,13 +38,58 @@ object TextLib extends App {
       'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','%', '$', '¥')
 
+    def rotateAlign(a: Char) = a match {
+      case '「' => '﹁'
+      case '」' => '﹂'
+      case '『' => '﹃' 
+      case '』' => '﹄'
+
+      case '（' => '︵' 
+      case '）' => '︶' 
+      case '(' => '︵' 
+      case ')' => '︶' 
+  
+      case '［' => '﹇' 
+      case '］' => '﹈'
+      case '[' => '﹇' 
+      case ']' => '﹈' 
+      
+      case '【' => '︻'
+      case '】' => '︼' 
+      case '〖' => '︗' 
+      case '〗' => '︘' 
+      
+      case '｛' => '︷' 
+      case '｝' => '︸' 
+      case '{' => '︷' 
+      case '}' => '︸' 
+      
+      case '〔' => '︹' 
+      case '〕' => '︺' 
+      
+      case '〈' => '︿' 
+      case '〉' => '﹀' 
+      case '＜' => '︿' 
+      case '＞' => '﹀' 
+      case '<' => '︿' 
+      case '>' => '﹀' 
+      
+      case '《' => '︽' 
+      case '》' => '︾' 
+      
+      case 'ー' => '⃒'
+      case '＝' => '‖'
+      case '−' => '⃓'
+
+      case '、' => '︑'
+      case '。' => '︒'
+    }
+    
+
     /** write strings by vertical */
     def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int): Unit = {
       val font = g.getFont.deriveFont(size.toFloat)
-      g.setFont(font)
-
-      //val modifiedSize = if(size > 100) 100 else size
-
+      g.setFont(font)      
       writeVertical(g, text, size, x, y, font)
     }
 
@@ -44,52 +98,53 @@ object TextLib extends App {
         val char = text.head
         val r = if(g.getFontMetrics(font).stringWidth(char.toString) == 0) 1
                 else (size / g.getFontMetrics(font).stringWidth(char.toString))
+        
+        if (rotationAlignUpChars(char)) {
+          g.drawString(rotateAlign(char).toString, x, y + (i + 1) * size - size * 2 / 4)
+          writeVertical(g, text.tail, size, x, y - size * 2 / 4, font, i + 1)
+        }
+        else if (rotationAlignDownChars(char)) {
+          g.drawString(rotateAlign(char).toString, x, y + (i + 1) * size)
+          writeVertical(g, text.tail, size, x, y - size / 4, font, i + 1)
+        }
 
-        if (rotationTranslationUpChars(char)) {
-          val transform = AffineTransform.getRotateInstance(Math.toRadians(90), 0, 0)
-          g.setFont(font.deriveFont(transform))
-          val gap_y = -size / r - size/2
-          val gap_x = size / 8
-          g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y * 3 / 4)
-          writeVertical(g, text.tail, size, x, y - size / 4, font, i + 1)
+        else if (rotationAlignRightChars(char)){
+          g.drawString(rotateAlign(char).toString, x + size / 4, y + (i + 1) * size)
+          writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
-        else if (rotationTranslationDownChars(char)) {
-          val transform = AffineTransform.getRotateInstance(Math.toRadians(90), 0, 0)
-          g.setFont(font.deriveFont(transform))
-          val gap_y = -size / r
-          val gap_x = size / 8
-          g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y * 3 / 4)
-          writeVertical(g, text.tail, size, x, y - size / 4, font, i + 1)
-        }
+
 
         else if (rotationChars(char)) {
           val transform = AffineTransform.getRotateInstance(Math.toRadians(90), 0, 0)
           g.setFont(font.deriveFont(transform))
-          val gap_y = -size / r
-          val gap_x = size / 4
-          g.drawString(char.toString, x + gap_x, y + (i + 1) * size + gap_y)
+          g.drawString(char.toString, x, y + (i + 1) * size)
           writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
 
+        else if (rotationTranslationUpDown(char)) {
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(90), 0, 0)
+          g.setFont(font.deriveFont(transform))
+          g.drawString(char.toString, x, y + (i + 1) * size - size / 2)
+          writeVertical(g, text.tail, size, x, y + size / 2, font, i + 1)
+        }
+
+        else if (kudouTen(char)) {
+          g.drawString(rotateAlign(char).toString, x, y + (i + 1) * size)
+          writeVertical(g, text.tail, size, x, y, font, i + 1)
+        }
 
         else if (translationChars(char)) {
-          val transform = AffineTransform.getTranslateInstance(size / 4 * 3 , -size / 4 * 3)
-          g.setFont(font.deriveFont(transform))
-          g.drawString(char.toString, x, y + (i + 1) * size)
+          g.drawString(char.toString, x + size / 4 * 3, y + (i + 1) * size -size / 4 * 3)
           writeVertical(g, text.tail, size, x, y - size / 4 * 3, font, i + 1)
         }
 
         else if (translationSmallChars(char)) {
-          val transform = AffineTransform.getTranslateInstance(size / 5 , 0)
-          g.setFont(font.deriveFont(transform))
-          g.drawString(char.toString, x, y + (i + 1) * size)
+          g.drawString(char.toString, x + size / 5, y + (i + 1) * size)
           writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
 
         else if (halfwidthAlphabet(char)){
-          val transform = AffineTransform.getTranslateInstance(size / 4 , 0)
-          g.setFont(font.deriveFont(transform))
-          g.drawString(char.toString, x, y + (i + 1) * size)
+          g.drawString(char.toString, x + size / 4, y + (i + 1) * size)
           writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
 
