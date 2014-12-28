@@ -18,14 +18,15 @@ object TextLib extends App {
     /**  definitions for vertical writing */
     /**  no need to rotate, case match */
     def rotationAlignUpChars = Set('(', '（', '「', '『', '【', '［', '[',
-      '｛', '{', '〔', '＜', '<', '［', '《', '〖', '〈')
+      '｛', '{', '〔', '＜', '<', '［', '《', '〈')
     def rotationAlignDownChars = Set(')', '）', '」', '』','】', '］', ']',
-    '｝', '}', '〕', '＞', '>', '］', '》', '〗', '〉')
-    def rotationAlignRightChars = Set('ー', '＝', '−')
+    '｝', '}', '〕', '＞', '>', '］', '》', '〉')
+    def rotationAlign = Set('ー')
+    def rotationAlignRightChars = Set('＝')
     def kudouTen = Set('、', '。')
 
     /** need to rotate */
-    def rotationChars = Set('-', '‐', '‑', '‒', '–', '―','ｰ')
+    def rotationChars = Set('-', '‐', '‑', '‒', '–', '―','ｰ', '−')
     def rotationTranslationUpDown = Set('〜', '~')
     
     /** need to translate */
@@ -56,8 +57,6 @@ object TextLib extends App {
       
       case '【' => '︻'
       case '】' => '︼' 
-      case '〖' => '︗' 
-      case '〗' => '︘' 
       
       case '｛' => '︷' 
       case '｝' => '︸' 
@@ -77,14 +76,12 @@ object TextLib extends App {
       case '《' => '︽' 
       case '》' => '︾' 
       
-      case 'ー' => '⃒'
+      case 'ー' => '｜'
       case '＝' => '‖'
-      case '−' => '⃓'
 
       case '、' => '︑'
       case '。' => '︒'
-    }
-    
+    }    
 
     /** write strings by vertical */
     def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int): Unit = {
@@ -110,6 +107,11 @@ object TextLib extends App {
 
         else if (rotationAlignRightChars(char)){
           g.drawString(rotateAlign(char).toString, x + size / 4, y + (i + 1) * size)
+          writeVertical(g, text.tail, size, x, y, font, i + 1)
+        }
+
+        else if (rotationAlign(char)){
+          g.drawString(rotateAlign(char).toString, x, y + (i + 1) * size)
           writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
 
