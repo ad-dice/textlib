@@ -18,7 +18,7 @@ object TextLib extends App {
     def rotationTranslationUpChars = Set('（', '「','『','【')
     def rotationTranslationDownChars = Set('）', '」', '』','】')
     def rotationChars = Set('(', ')', '[',  ']',
-      '-', '〜', '~', '‐', '‑', '‒', '–', '―', '−', 'ー', 'ｰ', '一')
+      '-', '〜', '~', '‐', '‑', '‒', '–', '―', '−', 'ー', 'ｰ', '＝','=','〈 ','〉','{','}','｛','｝','〔','〕','《','》')
     def translationChars = Set(',', '.', '，', '。', '.')
     def translationSmallChars = Set('ゃ', 'ょ', 'ゅ', 'っ', 'ぁ', 'ぇ', 'ぃ', 'ぉ', 'ぅ',
       'ャ', 'ョ', 'ュ', 'ッ', 'ァ', 'ェ', 'ィ', 'ォ', 'ゥ')
@@ -34,7 +34,7 @@ object TextLib extends App {
       g.setFont(font)
 
       //val modifiedSize = if(size > 100) 100 else size
-      
+
       writeVertical(g, text, size, x, y, font)
     }
 
