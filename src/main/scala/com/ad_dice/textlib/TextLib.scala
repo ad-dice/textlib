@@ -704,7 +704,8 @@ object TextLib extends App {
     if(text_length <= text_length_max * i){
         val font_size = width / i
         //println(text_length, text_length_max, font_size)
-        immutableVerticalWrite(g, source, targetAreaInfo.copy(size = if(font_size>100) 100 else font_size), alignVertical, alignHorizontal)
+        //immutableVerticalWrite(g, source, targetAreaInfo.copy(size = if(font_size>100) 100 else font_size), alignVertical, alignHorizontal)
+        immutableVerticalWrite(g, source, targetAreaInfo.copy(size = font_size), alignVertical, alignHorizontal)
         //println(font_size)
       }
       else{
@@ -750,11 +751,13 @@ object TextLib extends App {
       val font_size = height / text_length
       //println(font_size, width)
       if(font_size > width){
-        immutableVerticalWrite(g, source, targetAreaInfo.copy(size = if(width>100) 100 else width, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
+        //immutableVerticalWrite(g, source, targetAreaInfo.copy(size = if(width>100) 100 else width, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
+        immutableVerticalWrite(g, source, targetAreaInfo.copy(size = width, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
         //println(width)
       }
       else{
-        immutableVerticalWrite(g, source, targetAreaInfo.copy(size = if(font_size>100) 100 else font_size, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
+        //immutableVerticalWrite(g, source, targetAreaInfo.copy(size = if(font_size>100) 100 else font_size, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
+        immutableVerticalWrite(g, source, targetAreaInfo.copy(size = font_size, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
         println(font_size)
       }
     }
