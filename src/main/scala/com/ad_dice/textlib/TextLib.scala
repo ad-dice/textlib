@@ -21,14 +21,15 @@ object TextLib extends App {
       '｛', '{', '〔', '＜', '<', '［', '《', '〈')
     def rotationAlignDownChars = Set(')', '）', '」', '』','】', '］', ']',
     '｝', '}', '〕', '＞', '>', '］', '》', '〉')
+    def horizontalUpChars = Set('」', '』')
     def rotationAlign = Set('ー')
     def rotationAlignRightChars = Set('＝')
-    def kudouTen = Set('、', '。')
+    def kutouTen = Set('、', '。')
 
     /** need to rotate */
-    def rotationChars = Set('-', '‐', '‑', '‒', '–', '―','ｰ', '−')
-    def rotationTranslationUpDown = Set('〜', '~')
-    
+    def rotationChars = Set('-', '‐', '‑', '‒', '–', '―','ｰ', '−', '~')
+    def rotationTranslationUpDown = Set('〜', '=')
+
     /** need to translate */
     def translationChars = Set(',', '.', '，', '.')
     def translationSmallChars = Set('ゃ', 'ょ', 'ゅ', 'っ', 'ぁ', 'ぇ', 'ぃ', 'ぉ', 'ぅ',
@@ -42,40 +43,40 @@ object TextLib extends App {
     def rotateAlign(a: Char) = a match {
       case '「' => '﹁'
       case '」' => '﹂'
-      case '『' => '﹃' 
+      case '『' => '﹃'
       case '』' => '﹄'
 
-      case '（' => '︵' 
-      case '）' => '︶' 
-      case '(' => '︵' 
-      case ')' => '︶' 
-  
-      case '［' => '﹇' 
+      case '（' => '︵'
+      case '）' => '︶'
+      case '(' => '︵'
+      case ')' => '︶'
+
+      case '［' => '﹇'
       case '］' => '﹈'
-      case '[' => '﹇' 
-      case ']' => '﹈' 
-      
+      case '[' => '﹇'
+      case ']' => '﹈'
+
       case '【' => '︻'
-      case '】' => '︼' 
-      
-      case '｛' => '︷' 
-      case '｝' => '︸' 
-      case '{' => '︷' 
-      case '}' => '︸' 
-      
-      case '〔' => '︹' 
-      case '〕' => '︺' 
-      
-      case '〈' => '︿' 
-      case '〉' => '﹀' 
-      case '＜' => '︿' 
-      case '＞' => '﹀' 
-      case '<' => '︿' 
-      case '>' => '﹀' 
-      
-      case '《' => '︽' 
-      case '》' => '︾' 
-      
+      case '】' => '︼'
+
+      case '｛' => '︷'
+      case '｝' => '︸'
+      case '{' => '︷'
+      case '}' => '︸'
+
+      case '〔' => '︹'
+      case '〕' => '︺'
+
+      case '〈' => '︿'
+      case '〉' => '﹀'
+      case '＜' => '︿'
+      case '＞' => '﹀'
+      case '<' => '︿'
+      case '>' => '﹀'
+
+      case '《' => '︽'
+      case '》' => '︾'
+
       case 'ー' => '｜'
       case '＝' => '‖'
 
@@ -96,12 +97,12 @@ object TextLib extends App {
       case '7' => '７'
       case '8' => '８'
       case '9' => '９'
-    }    
+    }
 
     /** write strings by vertical */
     def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int): Unit = {
       val font = g.getFont.deriveFont(size.toFloat)
-      g.setFont(font)      
+      g.setFont(font)
       writeVertical(g, text, size, x, y, font)
     }
 
@@ -110,42 +111,75 @@ object TextLib extends App {
         val char = text.head
         val r = if(g.getFontMetrics(font).stringWidth(char.toString) == 0) 1
                 else (size / g.getFontMetrics(font).stringWidth(char.toString))
-        
+        //println(r, char, g.getFontMetrics(font).stringWidth(char.toString))
         if (rotationAlignUpChars(char)) {
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
+          g.setFont(font.deriveFont(transform))
+
           g.drawString(rotateAlign(char).toString, x, y + (i + 1) * size - size * 2 / 4)
           writeVertical(g, text.tail, size, x, y - size * 2 / 4, font, i + 1)
         }
         else if (rotationAlignDownChars(char)) {
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
+          g.setFont(font.deriveFont(transform))
+
           g.drawString(rotateAlign(char).toString, x, y + (i + 1) * size)
           writeVertical(g, text.tail, size, x, y - size / 4, font, i + 1)
         }
 
         else if (rotationAlignRightChars(char)){
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
+          g.setFont(font.deriveFont(transform))
+
           g.drawString(rotateAlign(char).toString, x + size / 4, y + (i + 1) * size)
           writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
 
         else if (rotationAlign(char)){
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
+          g.setFont(font.deriveFont(transform))
+
           g.drawString(rotateAlign(char).toString, x, y + (i + 1) * size)
           writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
 
 
         else if (rotationChars(char)) {
-          val transform = AffineTransform.getRotateInstance(Math.toRadians(90), 0, 0)
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
           g.setFont(font.deriveFont(transform))
-          g.drawString(char.toString, x, y + (i + 1) * size)
-          writeVertical(g, text.tail, size, x, y, font, i + 1)
+
+          transform.rotate(Math.toRadians(90))
+          g.setFont(font.deriveFont(transform))
+
+          g.drawString(char.toString,
+            x + size / 2 - g.getFontMetrics(font).stringWidth(char.toString) / 2 * 14 / 16,
+            y + (i + 1) * size - size * 3 / 4)
+
+          transform.setToTranslation(0, 0)
+          transform.rotate(Math.toRadians(0))
+          g.setTransform(transform)
+
+          writeVertical(g, text.tail, size, x, y - size * 1 / 4, font, i + 1)
         }
 
         else if (rotationTranslationUpDown(char)) {
-          val transform = AffineTransform.getRotateInstance(Math.toRadians(90), 0, 0)
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
           g.setFont(font.deriveFont(transform))
-          g.drawString(char.toString, x, y + (i + 1) * size - size / 2)
-          writeVertical(g, text.tail, size, x, y + size / 2, font, i + 1)
+
+          transform.rotate(Math.toRadians(90))
+          g.setFont(font.deriveFont(transform))
+
+          g.drawString(char.toString, x + size / 2 - g.getFontMetrics(font).stringWidth(char.toString) / 2 * 14 / 16
+            , y + (i + 1) * size - size * 3 / 4)
+
+          transform.setToTranslation(0, 0)
+          transform.rotate(Math.toRadians(0))
+          g.setTransform(transform)
+
+          writeVertical(g, text.tail, size, x, y + size * 1 / 4, font, i + 1)
         }
 
-        else if (kudouTen(char)) {
+        else if (kutouTen(char)) {
           g.drawString(rotateAlign(char).toString, x, y + (i + 1) * size)
           writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
@@ -161,7 +195,12 @@ object TextLib extends App {
         }
 
         else if (halfwidthAlphabet(char)){
-          g.drawString(char.toString, x + size / 4, y + (i + 1) * size)
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
+          g.setFont(font.deriveFont(transform))
+
+          g.drawString(char.toString,
+            x + size / 2 - g.getFontMetrics(font).stringWidth(char.toString) / 2,
+            y + (i + 1) * size)
           writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
 
@@ -178,15 +217,14 @@ object TextLib extends App {
       }
     }
 
-    /** write strings by horizontal */
+
     def writeHorizontal(g: Graphics2D, text: String, size: Int, x: Int, y: Int) {
-      g.setFont(g.getFont.deriveFont(size.toFloat))
-      for(i <- 0 to text.length - 1){
-        if(halfWidthNumber(text(i)))
-          g.drawString(numbersToFullWidth(text(i)).toString, x + i * size, y + size)
-        else
-          g.drawString(text(i).toString, x + i * size, y + size)
-      }
+      val font = g.getFont.deriveFont(size.toFloat)
+      g.setFont(font)
+      //g.setFont(g.getFont.deriveFont(size.toFloat))
+      for(i <- 0 to text.length - 1)
+        println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString), g.getFontMetrics.getHeight())
+      g.drawString(text, x, y + size * 14 / 16)
     }
 
    /** write strings by vertical type and convert to image file
@@ -633,58 +671,121 @@ object TextLib extends App {
           }
         }
       case Horizontal.CenterLeft | Horizontal.CenterRight =>
+        val font = g.getFont.deriveFont(font_size.toFloat)
+        g.setFont(font)
         val line_letter_size = width / font_size
         val text_grouped_list = source.grouped(line_letter_size).toList
         alignVertical match {
           case Vertical.Top =>
           if(text_length <= width){
-
-            writeHorizontal(g, source, font_size, mid_width - text_length / 2 + font_size / 2 * (source.size % 2), targetAreaInfo.yt)
+            var textSize = 0
+            val text = source
+            //println("HERE::::::", text)
+            for(i <- 0 to text.length - 1){
+              textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
+              //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
+            }
+            //println(textSize)
+            writeHorizontal(g, source, font_size, mid_width - textSize / 2 + font_size / 2 * (text.size % 2), targetAreaInfo.yt)
+            //writeHorizontal(g, source, font_size, mid_width - textSize / 2 , targetAreaInfo.yt)
           }
           else{
-            for(i <- 0 to text_grouped_list.size - 1)
-            writeHorizontal(g, text_grouped_list(i), font_size,
-              mid_width - text_grouped_list(i).size / 2 * font_size, targetAreaInfo.yt + font_size * i)
+            for(i <- 0 to text_grouped_list.size - 1){
+              var textSize = 0
+              val text = text_grouped_list(i)
+              //println("HERE::::::", text)
+              for(i <- 0 to text.length - 1){
+                textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
+                //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
+              }
+              //println(textSize)
+              writeHorizontal(g, text_grouped_list(i), font_size,
+                mid_width - textSize / 2, targetAreaInfo.yt + font_size * i)
+            }
           }
           case Vertical.Bottom =>
           if(text_length <= width){
-            writeHorizontal(g, source, font_size, mid_width - text_length / 2 + font_size / 2 * (source.size % 2), targetAreaInfo.yb - font_size)
+            var textSize = 0
+            val text = source
+            //println("HERE::::::", text)
+            for(i <- 0 to text.length - 1){
+              textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
+              //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
+            }
+            //writeHorizontal(g, source, font_size, mid_width - text_length / 2 + font_size / 2 * (source.size % 2), targetAreaInfo.yb - font_size)
+            writeHorizontal(g, source, font_size, mid_width - textSize / 2 + font_size / 2 * (text.size % 2), targetAreaInfo.yb - font_size)
           }
           else{
             val gap = text_grouped_list.size * font_size
-            for(i <- 0 to text_grouped_list.size - 1)
-            writeHorizontal(g, text_grouped_list(i), font_size,
-              mid_width - text_grouped_list(i).size / 2 * font_size, targetAreaInfo.yb - gap + font_size * i)
+            for(i <- 0 to text_grouped_list.size - 1){
+              var textSize = 0
+              val text = text_grouped_list(i)
+              //println("HERE::::::", text)
+              for(i <- 0 to text.length - 1){
+                textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
+                //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
+              }
+              writeHorizontal(g, text_grouped_list(i), font_size,
+                mid_width - textSize / 2 , targetAreaInfo.yb - gap + font_size * i)
+            }
           }
           case Vertical.CenterBottom =>
           val reversed_text = source.reverse
           val text_grouped_list_ = reversed_text.grouped(line_letter_size).toList
 
           if(text_length <= width){
-            writeHorizontal(g, source, font_size, mid_width - text_length / 2 + font_size / 2 * (source.size % 2), mid_height)
+            var textSize = 0
+            val text = source
+            //println("HERE::::::", text)
+            for(i <- 0 to text.length - 1){
+              textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
+              //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
+            }
+            writeHorizontal(g, source, font_size, mid_width - textSize / 2 + font_size / 2 * (source.size % 2), mid_height)
           }
           else{
             val gap = text_grouped_list.size / 2 * font_size
-            for(i <- 0 to text_grouped_list.size - 1)
+            for(i <- 0 to text_grouped_list.size - 1){
+              var textSize = 0
+              val text = text_grouped_list(i)
+              //println("HERE::::::", text)
+              for(i <- 0 to text.length - 1){
+                textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
+                //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
+              }
               if(line_size_width % 2 == 0)
                 writeHorizontal(g, text_grouped_list_(i).reverse, font_size,
-                  mid_width - text_grouped_list_(i).size / 2 * font_size,
+                  mid_width - textSize / 2,
                   mid_height + gap - font_size * (i+1))
               else
                   writeHorizontal(g, text_grouped_list_(i).reverse, font_size,
-                  mid_width - text_grouped_list_(i).size / 2 * font_size,
+                  mid_width - textSize / 2,
                   mid_height + gap - font_size * (i))
+            }
           }
           case Vertical.CenterTop =>
           if(text_length <= width){
-            writeHorizontal(g, source, font_size, mid_width - text_length / 2 + font_size / 2 * (source.size % 2), mid_height)
+            var textSize = 0
+            val text = source
+            //println("HERE::::::", text)
+            for(i <- 0 to text.length - 1){
+              textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
+              //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
+            }
+            writeHorizontal(g, source, font_size, mid_width - textSize / 2 + font_size / 2 * (source.size % 2), mid_height)
           }
           else{
             val gap = text_grouped_list.size / 2 * font_size
-            for(i <- 0 to text_grouped_list.size - 1)
-            writeHorizontal(g, text_grouped_list(i), font_size,
-              mid_width - text_grouped_list(i).size / 2 * font_size,
-              mid_height - gap + font_size * i)
+            for(i <- 0 to text_grouped_list.size - 1){
+              var textSize = 0
+              val text = text_grouped_list(i)
+              //println("HERE::::::", text)
+              for(i <- 0 to text.length - 1){
+                textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
+                //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
+              }
+              writeHorizontal(g, text_grouped_list(i), font_size, mid_width - textSize / 2, mid_height - gap + font_size * i)
+            }
           }
         }
       }
@@ -967,23 +1068,22 @@ object TextLib extends App {
     }
 
   def countVerticalNextLine(source: String, targetAreaInfo: TargetAreaInfo): Int = {
+    val font_size = if(targetAreaInfo.size == 0){
+      defaultFontSize
+      }else{
+        targetAreaInfo.size
+        }
 
-  val font_size = if(targetAreaInfo.size == 0){
-    defaultFontSize
-  }else{
-    targetAreaInfo.size
+    val width = (targetAreaInfo.xb - targetAreaInfo.xt).abs
+    val heightp = (targetAreaInfo.yb - targetAreaInfo.yt).abs
+    val height = if(heightp != 0) heightp else 1
+    val letter_size = source.length
+    val text_length = font_size * letter_size
+
+    /** calculate how many lines needed to write */
+    val lineNumbers = if(letter_size==0) 0 else (if(text_length <= height){1} else{if(text_length % height == 0) text_length / height else text_length / height + 1})
+    return lineNumbers
   }
-
-  val width = (targetAreaInfo.xb - targetAreaInfo.xt).abs
-  val heightp = (targetAreaInfo.yb - targetAreaInfo.yt).abs
-  val height = if(heightp != 0) heightp else 1
-  val letter_size = source.length
-  val text_length = font_size * letter_size
-
-  /** calculate how many lines needed to write */
-  val lineNumbers = if(letter_size==0) 0 else (if(text_length <= height){1} else{if(text_length % height == 0) text_length / height else text_length / height + 1})
-  return lineNumbers
-}
 
 def countHorizontalNextLine(source: String, targetAreaInfo: TargetAreaInfo): Int = {
 
