@@ -22,13 +22,13 @@ object TextLib extends App {
     def rotationAlignDownChars = Set(')', '）', '」', '』','】', '］', ']',
     '｝', '}', '〕', '＞', '>', '］', '》', '〉')
     def horizontalUpChars = Set('」', '』')
-    def rotationAlign = Set('ー')
-    def rotationAlignRightChars = Set('＝')
+    def rotationAlign = Set('ー', '-', '‐', '‑', '‒', '–', '―','ｰ', '−')
+    def rotationAlignRightChars = Set('＝', '=')
     def kutouTen = Set('、', '。')
 
     /** need to rotate */
-    def rotationChars = Set('-', '‐', '‑', '‒', '–', '―','ｰ', '−', '~')
-    def rotationTranslationUpDown = Set('〜', '=')
+    def rotationChars = Set('~')
+    def rotationTranslationUpDown = Set('〜')
 
     /** need to translate */
     def translationChars = Set(',', '.', '，', '.')
@@ -78,7 +78,17 @@ object TextLib extends App {
       case '》' => '︾'
 
       case 'ー' => '｜'
+      case '-' => '｜'
+      case '‐' => '｜'
+      case '‑' => '｜'
+      case '‒' => '｜'
+      case '–' => '｜'
+      case '―' => '｜'
+      case 'ｰ' => '｜'
+      case '−' => '｜'
+
       case '＝' => '‖'
+      case '=' => '‖'
 
       case '、' => '︑'
       case '。' => '︒'
@@ -152,7 +162,8 @@ object TextLib extends App {
           g.setFont(font.deriveFont(transform))
 
           g.drawString(char.toString,
-            x + size / 2 - g.getFontMetrics(font).stringWidth(char.toString) / 2 * 14 / 16,
+            //x + size / 2 - g.getFontMetrics(font).stringWidth(char.toString) / 2 * 14 / 16,*/
+            x + size / 4 ,
             y + (i + 1) * size - size * 3 / 4)
 
           transform.setToTranslation(0, 0)
@@ -170,13 +181,13 @@ object TextLib extends App {
           g.setFont(font.deriveFont(transform))
 
           g.drawString(char.toString, x + size / 2 - g.getFontMetrics(font).stringWidth(char.toString) / 2 * 14 / 16
-            , y + (i + 1) * size - size * 3 / 4)
+            , y + (i + 1) * size - size * 7 / 8)
 
           transform.setToTranslation(0, 0)
           transform.rotate(Math.toRadians(0))
           g.setTransform(transform)
 
-          writeVertical(g, text.tail, size, x, y + size * 1 / 4, font, i + 1)
+          writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
 
         else if (kutouTen(char)) {
