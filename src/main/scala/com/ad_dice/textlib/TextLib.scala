@@ -34,12 +34,14 @@ object TextLib extends App {
     def translationChars = Set(',', '.', '，', '.')
     def translationSmallChars = Set('ゃ', 'ょ', 'ゅ', 'っ', 'ぁ', 'ぇ', 'ぃ', 'ぉ', 'ぅ',
       'ャ', 'ョ', 'ュ', 'ッ', 'ァ', 'ェ', 'ィ', 'ォ', 'ゥ')
-    def halfwidthAlphabet = Set('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-      'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    def halfwidthAlphabetBig = Set(
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
       'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','%', '$', '¥')
-
+    def halfwidthAlphabetSmallUpResize = Set('a', 'c', 'e', 'm',
+      'n', 'o', 'r', 's', 't', 'u', 'v', 'w', 'x', 'z')
+    def halfwidthAlphabetSmall = Set('b', 'd', 'f', 'h', 'i', 'l', 'k')
+    def halfwidthAlphabetSmallUp = Set('y', 'q', 'g', 'j', 'p')
     def rotateAlign(a: Char) = a match {
       case '「' => '﹁'
       case '」' => '﹂'
@@ -205,7 +207,7 @@ object TextLib extends App {
           writeVertical(g, text.tail, size, x, y, font, i + 1)
         }
 
-        else if (halfwidthAlphabet(char)){
+        else if (halfwidthAlphabetBig(char)){
           val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
           g.setFont(font.deriveFont(transform))
 
@@ -213,6 +215,36 @@ object TextLib extends App {
             x + size / 2 - g.getFontMetrics(font).stringWidth(char.toString) / 2,
             y + (i + 1) * size)
           writeVertical(g, text.tail, size, x, y, font, i + 1)
+        }
+
+        else if (halfwidthAlphabetSmall(char)){
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
+          g.setFont(font.deriveFont(transform))
+
+          g.drawString(char.toString,
+            x + size / 2 - g.getFontMetrics(font).stringWidth(char.toString) / 2,
+            y + (i + 1) * size)
+          writeVertical(g, text.tail, size, x, y, font, i + 1)
+        }
+
+        else if (halfwidthAlphabetSmallUp(char)){
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
+          g.setFont(font.deriveFont(transform))
+
+          g.drawString(char.toString,
+            x + size / 2 - g.getFontMetrics(font).stringWidth(char.toString) / 2,
+            y + (i + 1) * size - size / 4)
+          writeVertical(g, text.tail, size, x, y, font, i + 1)
+        }
+
+        else if (halfwidthAlphabetSmallUpResize(char)){
+          val transform = AffineTransform.getRotateInstance(Math.toRadians(0), 0, 0)
+          g.setFont(font.deriveFont(transform))
+
+          g.drawString(char.toString,
+            x + size / 2 - g.getFontMetrics(font).stringWidth(char.toString) / 2,
+            y + (i + 1) * size - size / 4)
+          writeVertical(g, text.tail, size, x, y - size / 4, font, i + 1)
         }
 
         else {
@@ -233,8 +265,8 @@ object TextLib extends App {
       val font = g.getFont.deriveFont(size.toFloat)
       g.setFont(font)
       //g.setFont(g.getFont.deriveFont(size.toFloat))
-      for(i <- 0 to text.length - 1)
-        println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString), g.getFontMetrics.getHeight())
+      //for(i <- 0 to text.length - 1)
+        //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString), g.getFontMetrics.getHeight())
       g.drawString(text, x, y + size * 14 / 16)
     }
 
@@ -1096,18 +1128,175 @@ object TextLib extends App {
     return lineNumbers
   }
 
-def countHorizontalNextLine(source: String, targetAreaInfo: TargetAreaInfo): Int = {
+  def countHorizontalNextLine(source: String, targetAreaInfo: TargetAreaInfo): Int = {
 
-  val font_size = if(targetAreaInfo.size == 0){defaultFontSize}
-                  else{targetAreaInfo.size}
-  val widthp = (targetAreaInfo.xb - targetAreaInfo.xt).abs
-  val width = if(widthp != 0) widthp else 1
-  val height = (targetAreaInfo.yb - targetAreaInfo.yt).abs
-  val letter_size = source.length
-  val text_length = font_size * letter_size
-  /** calculate how many lines needed to write */
-  val lineNumbers = if(letter_size==0) 0 else ( if(text_length <= width){1} else{ if(text_length % width == 0) text_length / width else text_length / width + 1})
-  return lineNumbers
+    val font_size = if(targetAreaInfo.size == 0){defaultFontSize}
+                    else{targetAreaInfo.size}
+    val widthp = (targetAreaInfo.xb - targetAreaInfo.xt).abs
+    val width = if(widthp != 0) widthp else 1
+    val height = (targetAreaInfo.yb - targetAreaInfo.yt).abs
+    val letter_size = source.length
+    val text_length = font_size * letter_size
+    /** calculate how many lines needed to write */
+    val lineNumbers = if(letter_size==0) 0 else ( if(text_length <= width){1} else{ if(text_length % width == 0) text_length / width else text_length / width + 1})
+    return lineNumbers
+  }
+
+  /** Mutable Horizontal Write One Line */
+  def mutableHorizontalWriteOneLine(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, alignVertical: Vertical, alignHorizontal: Horizontal){
+    /** Exception: If x_top == x_bottom */
+    if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
+      Console.out.println( Console.RED + "Warning: WIDTH size is NULL or 1. We set the WIDTH size to " + WidthDefault +" by default" + Console.RESET )
+    }
+
+    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
+
+    /** Exception: If y_top == y_bottom */
+    if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
+      Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
+    }
+
+    /** Exception: if source is NULL we call immutableHorizontalWrite function **/
+    if(source.length() == 0){
+      Console.out.println( Console.RED + "Warning: your text is NULL"+ Console.RESET )
+      immutableHorizontalWrite(g, source, targetAreaInfo, alignVertical, alignHorizontal)
+      return
+    }
+
+    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
+    val height = (y_bottom - targetAreaInfo.yt).abs
+    val width = (x_bottom - targetAreaInfo.xt).abs
+
+    //println(source, source.length)
+    //println(width / source.length, width, height)
+
+    val font_size = if(width / source.length() < height) width / source.length() else height
+
+    val font = g.getFont.deriveFont(font_size.toFloat)
+    g.setFont(font)
+    var source_width = 0
+    for(letter <- source){
+      source_width += g.getFontMetrics(font).stringWidth(letter.toString)
+    }
+
+    //println(source_width, source.length * font_size)
+
+    alignHorizontal match {
+      case Horizontal.Left =>
+        alignVertical match {
+          case Vertical.Top =>
+            writeHorizontal(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yt)
+          case Vertical.Bottom =>
+            writeHorizontal(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yb - font_size)
+          case Vertical.CenterBottom | Vertical.CenterTop =>
+            writeHorizontal(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + height / 2 - font_size / 2)
+        }
+      case Horizontal.Right =>
+        alignVertical match {
+          case Vertical.Top =>
+            writeHorizontal(g, source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt)
+          case Vertical.Bottom =>
+            writeHorizontal(g, source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yb - font_size)
+          case Vertical.CenterBottom | Vertical.CenterTop =>
+            writeHorizontal(g, source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + height / 2 - font_size / 2)
+        }
+      case Horizontal.CenterLeft| Horizontal.CenterRight =>
+        alignVertical match {
+          case Vertical.Top =>
+            writeHorizontal(g, source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt)
+          case Vertical.Bottom =>
+            writeHorizontal(g, source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yb - font_size)
+          case Vertical.CenterBottom | Vertical.CenterTop =>
+            writeHorizontal(g, source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + height / 2 - font_size / 2)
+        }
+    }
+  }
+
+  /** Mutable Vertical Write One Line */
+  def mutableVerticalWriteOneLine(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, alignVertical: Vertical, alignHorizontal: Horizontal){
+    /** Exception: If x_top == x_bottom */
+    if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
+      Console.out.println( Console.RED + "Warning: WIDTH size is NULL or 1. We set the WIDTH size to " + WidthDefault +" by default" + Console.RESET )
+    }
+
+    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
+
+    /** Exception: If y_top == y_bottom */
+    if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
+      Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
+    }
+
+    /** Exception: if source is NULL we call immutableHorizontalWrite function **/
+    if(source.length() == 0){
+      Console.out.println( Console.RED + "Warning: your text is NULL"+ Console.RESET )
+      immutableHorizontalWrite(g, source, targetAreaInfo, alignVertical, alignHorizontal)
+      return
+    }
+
+    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
+    val height = (y_bottom - targetAreaInfo.yt).abs
+    val width = (x_bottom - targetAreaInfo.xt).abs
+
+    //println(source, height, width)
+
+    var count_letter = 0.0
+    for(letter <- source){
+      if(rotationAlignUpChars(letter)){
+        count_letter += 1 / 2.0
+      }
+      else if(rotationAlignDownChars(letter)){
+        count_letter += 3 / 4.0
+      }
+      else if(rotationChars(letter)){
+        count_letter += 3 / 4.0
+      }
+      else if(translationChars(letter)){
+        count_letter += 1 / 4.0
+      }
+      else if(halfwidthAlphabetSmallUpResize(letter)){
+        count_letter += 3 / 4.0
+      }
+      else{
+        count_letter += 1
+      }
+    }
+    //println(source.length, height / source.length)
+    //println(count_letter.ceil.toInt, height / count_letter.ceil.toInt)
+    val font_size = if(height / count_letter.ceil.toInt < width) height / count_letter.ceil.toInt else width
+    //println("size = ", font_size)
+
+    val source_height = (count_letter * font_size).ceil.toInt
+    var marginErr = font_size / 8
+
+    alignVertical match {
+      case Vertical.Top =>
+        alignHorizontal match {
+          case Horizontal.Left =>
+            writeVertical(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yt)
+          case Horizontal.Right =>
+            writeVertical(g, source, font_size, targetAreaInfo.xb - font_size, targetAreaInfo.yt)
+          case Horizontal.CenterLeft | Horizontal.CenterRight =>
+            writeVertical(g, source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2, targetAreaInfo.yt)
+        }
+      case Vertical.Bottom =>
+        alignHorizontal match {
+          case Horizontal.Left =>
+            writeVertical(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yb - source_height - marginErr)
+          case Horizontal.Right =>
+            writeVertical(g, source, font_size, targetAreaInfo.xb - font_size, targetAreaInfo.yb - source_height - marginErr)
+          case Horizontal.CenterLeft | Horizontal.CenterRight =>
+            writeVertical(g, source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2, targetAreaInfo.yb - source_height - marginErr)
+        }
+      case Vertical.CenterTop | Vertical.CenterBottom =>
+        alignHorizontal match {
+          case Horizontal.Left =>
+            writeVertical(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + height / 2 - source_height / 2)
+          case Horizontal.Right =>
+            writeVertical(g, source, font_size, targetAreaInfo.xb - font_size, targetAreaInfo.yt + height / 2 - source_height / 2)
+          case Horizontal.CenterLeft | Horizontal.CenterRight =>
+            writeVertical(g, source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2, targetAreaInfo.yt + height / 2 - source_height / 2)
+        }
+    }
   }
 
 }
