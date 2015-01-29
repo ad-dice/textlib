@@ -98,19 +98,6 @@ object TextLib extends App {
 
     def halfWidthNumber = Set('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
 
-    def numbersToFullWidth(a: Char) = a match {
-      case '0' => '０'
-      case '1' => '１'
-      case '2' => '２'
-      case '3' => '３'
-      case '4' => '４'
-      case '5' => '５'
-      case '6' => '６'
-      case '7' => '７'
-      case '8' => '８'
-      case '9' => '９'
-    }
-
     /** write strings by vertical */
     def writeVertical(g: Graphics2D, text: String, size: Int, x: Int, y: Int): Unit = {
       val font = g.getFont.deriveFont(size.toFloat)
@@ -567,12 +554,6 @@ object TextLib extends App {
     //   return;
     // }
 
-    val width = targetAreaInfo.xb - targetAreaInfo.xt
-    val height = targetAreaInfo.yb - targetAreaInfo.yt
-
-    val letter_size = source.length()
-    val text_length = font_size * letter_size
-
     // tentatively commented out to avoid circular referrence with immutable* and mutable*
     //* if source is not fit rectangle, we call mutable function */
     // if(letter_size > (width / font_size).toInt * (height / font_size).toInt){
@@ -585,253 +566,137 @@ object TextLib extends App {
     //   return;
     // }
 
-    // line_size_width
-    val one_line_size_width = width / font_size
 
-    val line_size_width = if(letter_size % one_line_size_width == 0)
-      letter_size / one_line_size_width
-      else
-      letter_size / one_line_size_width + 1
+    val height = (y_bottom - targetAreaInfo.yt).abs
+    val width = (x_bottom - targetAreaInfo.xt).abs
 
-    val mid_height = if(line_size_width % 2 == 0)
-      (targetAreaInfo.yt + targetAreaInfo.yb) / 2
-      else
-      (targetAreaInfo.yt + targetAreaInfo.yb - font_size) / 2
+    val line_numbers = height / font_size
 
-    // line_size_height
-    val mid_width = if(one_line_size_width % 2 == 0)
-      (targetAreaInfo.xt + targetAreaInfo.xb) / 2
-      else
-      (targetAreaInfo.xt + targetAreaInfo.xb - font_size) / 2
+    var count_letter = 0.0
+    val font = g.getFont.deriveFont(font_size.toFloat)
+    g.setFont(font)
+    var source_width = 0
+    var j, k = 0
 
-    //println(text_length, width, height)
-
-
-    alignHorizontal match {
-      case Horizontal.Left =>
-        val line_letter_size = width / font_size
-        val text_grouped_list = source.grouped(line_letter_size).toList
-
-        /** start write top side */
-        alignVertical match {
-          case Vertical.Top =>
-          if(text_length <= width){
-
-            writeHorizontal(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yt)
-          }
-          else{
-            for(i <- 0 to text_grouped_list.size - 1)
-            writeHorizontal(g, text_grouped_list(i), font_size, targetAreaInfo.xt, targetAreaInfo.yt + font_size * i)
-          }
-          case Vertical.Bottom =>
-          if(text_length <= width){
-            writeHorizontal(g, source, font_size, targetAreaInfo.xt, targetAreaInfo.yb - font_size)
-          }
-          else{
-            val gap = text_grouped_list.size * font_size
-            for(i <- 0 to text_grouped_list.size - 1)
-                  //writeHorizontal(g, text_grouped_list(i), font_size, targetAreaInfo.xt, targetAreaInfo.yb - font_size * (i + 1))
-                  writeHorizontal(g, text_grouped_list(i), font_size, targetAreaInfo.xt, targetAreaInfo.yb - gap + font_size * i)
-                }
-                case Vertical.CenterBottom =>
-                val reversed_text = source.reverse
-                val text_grouped_list_ = reversed_text.grouped(line_letter_size).toList
-
-                if(text_length <= width){
-                  writeHorizontal(g, source, font_size, targetAreaInfo.xt, mid_height)
-                }
-                else{
-                  val gap = text_grouped_list.size / 2 * font_size
-                  for(i <- 0 to text_grouped_list_.size - 1)
-                    if(line_size_width % 2 == 0)
-                      writeHorizontal(g, text_grouped_list_(i).reverse, font_size,
-                        targetAreaInfo.xt, mid_height + gap - font_size * (i + 1))
-                    else
-                        writeHorizontal(g, text_grouped_list_(i).reverse, font_size,
-                        targetAreaInfo.xt, mid_height + gap - font_size * (i))
-                }
-                case Vertical.CenterTop =>
-                if(text_length <= width){
-                  writeHorizontal(g, source, font_size, targetAreaInfo.xt, mid_height)
-                }
-                else{
-                  val gap = text_grouped_list.size / 2 * font_size
-                  for(i <- 0 to text_grouped_list.size - 1)
-                  writeHorizontal(g, text_grouped_list(i), font_size, targetAreaInfo.xt, mid_height - gap + font_size * i)
-                }
+    for(i <- 0 to source.length - 1){
+      source_width += g.getFontMetrics(font).stringWidth(source(i).toString)
+      if(source_width > width){
+        source_width = source_width - g.getFontMetrics(font).stringWidth(source(i).toString)
+        val sub_source = source.substring(j,i)
+        alignHorizontal match {
+          case Horizontal.Left =>
+            alignVertical match {
+              case Vertical.Top =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + k * font_size)
+              case Vertical.Bottom =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yb - font_size - k * font_size)
+              case Vertical.CenterTop =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + height / 2 - (line_numbers / 2 - k) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + height / 2 - font_size / 2 - (line_numbers / 2 - k) * font_size)
+              case Vertical.CenterBottom =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + height / 2 + (line_numbers / 2 - k - 1) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + height / 2 - font_size / 2 + (line_numbers / 2 - k) * font_size)
               }
-      case Horizontal.Right =>
-        val line_letter_size = width / font_size
-        val text_grouped_list = source.grouped(line_letter_size).toList
-
-        /** start write top side */
-        alignVertical match {
-          case Vertical.Top =>
-          if(text_length <= width){
-
-            writeHorizontal(g, source, font_size, targetAreaInfo.xb - text_length, targetAreaInfo.yt)
-          }
-          else{
-            for(i <- 0 to text_grouped_list.size - 1)
-            writeHorizontal(g, text_grouped_list(i), font_size,
-              targetAreaInfo.xb - text_grouped_list(i).size * font_size, targetAreaInfo.yt + font_size * i)
-          }
-          case Vertical.Bottom =>
-          if(text_length <= width){
-            writeHorizontal(g, source, font_size, targetAreaInfo.xb - text_length, targetAreaInfo.yb - font_size)
-          }
-          else{
-            val gap = text_grouped_list.size * font_size
-            for(i <- 0 to text_grouped_list.size - 1)
-            writeHorizontal(g, text_grouped_list(i), font_size,
-              targetAreaInfo.xb - text_grouped_list(i).size * font_size, targetAreaInfo.yb - gap + font_size * i)
-          }
-          case Vertical.CenterBottom =>
-          val reversed_text = source.reverse
-          val text_grouped_list_ = reversed_text.grouped(line_letter_size).toList
-          if(text_length <= width){
-            writeHorizontal(g, source, font_size, targetAreaInfo.xb - text_length, mid_height)
-          }
-          else{
-            val gap = text_grouped_list.size / 2 * font_size
-            for(i <- 0 to text_grouped_list.size - 1)
-            if(line_size_width % 2 == 0)
-              writeHorizontal(g, text_grouped_list_(i).reverse, font_size,
-                targetAreaInfo.xb - text_grouped_list_(i).size * font_size, mid_height + gap - font_size * (i+1))
-            else
-              writeHorizontal(g, text_grouped_list_(i).reverse, font_size,
-                targetAreaInfo.xb - text_grouped_list_(i).size * font_size, mid_height + gap - font_size * (i))
-          }
-          case Vertical.CenterTop =>
-          if(text_length <= width){
-            writeHorizontal(g, source, font_size, targetAreaInfo.xb - text_length, mid_height)
-          }
-          else{
-            val gap = text_grouped_list.size / 2 * font_size
-            for(i <- 0 to text_grouped_list.size - 1)
-            writeHorizontal(g, text_grouped_list(i), font_size,
-              targetAreaInfo.xb - text_grouped_list(i).size * font_size, mid_height - gap + font_size * i)
-          }
+          case Horizontal.Right =>
+            alignVertical match {
+              case Vertical.Top =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + k * font_size)
+              case Vertical.Bottom =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yb - font_size - k * font_size)
+              case Vertical.CenterTop =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + height / 2 - (line_numbers / 2 - k) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + height / 2 - font_size / 2 - (line_numbers / 2 - k) * font_size)
+              case Vertical.CenterBottom =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + height / 2 + (line_numbers / 2 - k - 1) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + height / 2 - font_size / 2 + (line_numbers / 2 - k) * font_size)
+              }
+          case Horizontal.CenterLeft| Horizontal.CenterRight =>
+            alignVertical match {
+              case Vertical.Top =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + k * font_size)
+              case Vertical.Bottom =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yb - font_size - k * font_size)
+              case Vertical.CenterTop =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + height / 2 - (line_numbers / 2 - k) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + height / 2 - font_size / 2 - (line_numbers / 2 - k) * font_size)
+              case Vertical.CenterBottom =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + height / 2 + (line_numbers / 2 - k - 1) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + height / 2 - font_size / 2 + (line_numbers / 2 - k) * font_size)
+              }
         }
-      case Horizontal.CenterLeft | Horizontal.CenterRight =>
-        val font = g.getFont.deriveFont(font_size.toFloat)
-        g.setFont(font)
-        val line_letter_size = width / font_size
-        val text_grouped_list = source.grouped(line_letter_size).toList
-        alignVertical match {
-          case Vertical.Top =>
-          if(text_length <= width){
-            var textSize = 0
-            val text = source
-            //println("HERE::::::", text)
-            for(i <- 0 to text.length - 1){
-              textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
-              //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
-            }
-            //println(textSize)
-            writeHorizontal(g, source, font_size, mid_width - textSize / 2 + font_size / 2 * (text.size % 2), targetAreaInfo.yt)
-            //writeHorizontal(g, source, font_size, mid_width - textSize / 2 , targetAreaInfo.yt)
-          }
-          else{
-            for(i <- 0 to text_grouped_list.size - 1){
-              var textSize = 0
-              val text = text_grouped_list(i)
-              //println("HERE::::::", text)
-              for(i <- 0 to text.length - 1){
-                textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
-                //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
-              }
-              //println(textSize)
-              writeHorizontal(g, text_grouped_list(i), font_size,
-                mid_width - textSize / 2, targetAreaInfo.yt + font_size * i)
-            }
-          }
-          case Vertical.Bottom =>
-          if(text_length <= width){
-            var textSize = 0
-            val text = source
-            //println("HERE::::::", text)
-            for(i <- 0 to text.length - 1){
-              textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
-              //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
-            }
-            //writeHorizontal(g, source, font_size, mid_width - text_length / 2 + font_size / 2 * (source.size % 2), targetAreaInfo.yb - font_size)
-            writeHorizontal(g, source, font_size, mid_width - textSize / 2 + font_size / 2 * (text.size % 2), targetAreaInfo.yb - font_size)
-          }
-          else{
-            val gap = text_grouped_list.size * font_size
-            for(i <- 0 to text_grouped_list.size - 1){
-              var textSize = 0
-              val text = text_grouped_list(i)
-              //println("HERE::::::", text)
-              for(i <- 0 to text.length - 1){
-                textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
-                //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
-              }
-              writeHorizontal(g, text_grouped_list(i), font_size,
-                mid_width - textSize / 2 , targetAreaInfo.yb - gap + font_size * i)
-            }
-          }
-          case Vertical.CenterBottom =>
-          val reversed_text = source.reverse
-          val text_grouped_list_ = reversed_text.grouped(line_letter_size).toList
-
-          if(text_length <= width){
-            var textSize = 0
-            val text = source
-            //println("HERE::::::", text)
-            for(i <- 0 to text.length - 1){
-              textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
-              //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
-            }
-            writeHorizontal(g, source, font_size, mid_width - textSize / 2 + font_size / 2 * (source.size % 2), mid_height)
-          }
-          else{
-            val gap = text_grouped_list.size / 2 * font_size
-            for(i <- 0 to text_grouped_list.size - 1){
-              var textSize = 0
-              val text = text_grouped_list(i)
-              //println("HERE::::::", text)
-              for(i <- 0 to text.length - 1){
-                textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
-                //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
-              }
-              if(line_size_width % 2 == 0)
-                writeHorizontal(g, text_grouped_list_(i).reverse, font_size,
-                  mid_width - textSize / 2,
-                  mid_height + gap - font_size * (i+1))
-              else
-                  writeHorizontal(g, text_grouped_list_(i).reverse, font_size,
-                  mid_width - textSize / 2,
-                  mid_height + gap - font_size * (i))
-            }
-          }
-          case Vertical.CenterTop =>
-          if(text_length <= width){
-            var textSize = 0
-            val text = source
-            //println("HERE::::::", text)
-            for(i <- 0 to text.length - 1){
-              textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
-              //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
-            }
-            writeHorizontal(g, source, font_size, mid_width - textSize / 2 + font_size / 2 * (source.size % 2), mid_height)
-          }
-          else{
-            val gap = text_grouped_list.size / 2 * font_size
-            for(i <- 0 to text_grouped_list.size - 1){
-              var textSize = 0
-              val text = text_grouped_list(i)
-              //println("HERE::::::", text)
-              for(i <- 0 to text.length - 1){
-                textSize += g.getFontMetrics(font).stringWidth(text(i).toString)
-                //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString))
-              }
-              writeHorizontal(g, text_grouped_list(i), font_size, mid_width - textSize / 2, mid_height - gap + font_size * i)
-            }
-          }
-        }
+        source_width = g.getFontMetrics(font).stringWidth(source(i).toString)
+        j = i
+        k += 1
       }
+    }
+
+    val sub_source = source.substring(j, source.length)
+        alignHorizontal match {
+          case Horizontal.Left =>
+            alignVertical match {
+              case Vertical.Top =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + k * font_size)
+              case Vertical.Bottom =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yb - font_size - k * font_size)
+              case Vertical.CenterTop =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + height / 2 - (line_numbers / 2 - k) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + height / 2 - font_size / 2 - (line_numbers / 2 - k) * font_size)
+              case Vertical.CenterBottom =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + height / 2 + (line_numbers / 2 - k - 1) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt, targetAreaInfo.yt + height / 2 - font_size / 2 + (line_numbers / 2 - k) * font_size)
+              }
+          case Horizontal.Right =>
+            alignVertical match {
+              case Vertical.Top =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + k * font_size)
+              case Vertical.Bottom =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yb - font_size - k * font_size)
+              case Vertical.CenterTop =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + height / 2 - (line_numbers / 2 - k) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + height / 2 - font_size / 2 - (line_numbers / 2 - k) * font_size)
+              case Vertical.CenterBottom =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + height / 2 + (line_numbers / 2 - k - 1) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xb - source_width, targetAreaInfo.yt + height / 2 - font_size / 2 + (line_numbers / 2 - k) * font_size)
+              }
+          case Horizontal.CenterLeft| Horizontal.CenterRight =>
+            alignVertical match {
+              case Vertical.Top =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + k * font_size)
+              case Vertical.Bottom =>
+                writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yb - font_size - k * font_size)
+              case Vertical.CenterTop =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + height / 2 - (line_numbers / 2 - k) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + height / 2 - font_size / 2 - (line_numbers / 2 - k) * font_size)
+              case Vertical.CenterBottom =>
+                if(line_numbers % 2 == 0)
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + height / 2 + (line_numbers / 2 - k - 1) * font_size)
+                else
+                  writeHorizontal(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - source_width / 2, targetAreaInfo.yt + height / 2 - font_size / 2 + (line_numbers / 2 - k) * font_size)
+              }
+        }
+
     }
 
   /** debug rendering a vertical text */
@@ -966,11 +831,19 @@ object TextLib extends App {
     val height = (y_bottom - targetAreaInfo.yt).abs
     val width = (x_bottom - targetAreaInfo.xt).abs
 
+    var count_letter = 0.0
+    val font_init = g.getFont.deriveFont(100.toFloat)
+    g.setFont(font_init)
+    for(i <- 0 to source.length - 1)
+      count_letter += g.getFontMetrics(font_init).stringWidth(source(i).toString) / 100.0
+
+    var letter_numbers = count_letter.ceil.toInt
+    println(letter_numbers)
+
     // Horizontal writing
-    val text_length_max = width / (height / 2)
-    val text_length = source.length()
-    if(text_length <= text_length_max){
-      val font_size = width / text_length
+    val letter_numbers_max = width / (height / 2)
+    if(letter_numbers <= letter_numbers_max){
+      val font_size = width / letter_numbers
       if(font_size > height){
         immutableHorizontalWrite(g, source, targetAreaInfo.copy(size = height, xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal)
       }
@@ -979,7 +852,7 @@ object TextLib extends App {
       }
     }
     else{
-    mutableHorizontalWritePluralLines(g, source, targetAreaInfo.copy(xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal, text_length)
+    mutableHorizontalWritePluralLines(g, source, targetAreaInfo.copy(xb = x_bottom, yb = y_bottom), alignVertical, alignHorizontal, letter_numbers)
       }
   }
 
@@ -1167,10 +1040,13 @@ object TextLib extends App {
     val height = (y_bottom - targetAreaInfo.yt).abs
     val width = (x_bottom - targetAreaInfo.xt).abs
 
-    //println(source, source.length)
-    //println(width / source.length, width, height)
+    var count_letter = 0.0
+    val font_init = g.getFont.deriveFont(100.toFloat)
+    g.setFont(font_init)
+    for(i <- 0 to source.length - 1)
+      count_letter += g.getFontMetrics(font_init).stringWidth(source(i).toString) / 100.0
 
-    val font_size = if(width / source.length() < height) width / source.length() else height
+    val font_size = if(width / count_letter.ceil.toInt < height) width / count_letter.ceil.toInt else height
 
     val font = g.getFont.deriveFont(font_size.toFloat)
     g.setFont(font)
@@ -1179,7 +1055,8 @@ object TextLib extends App {
       source_width += g.getFontMetrics(font).stringWidth(letter.toString)
     }
 
-    //println(source_width, source.length * font_size)
+    //println(source_width, source.length * font_size, height)
+    //println(count_letter, width / count_letter.ceil.toInt)
 
     alignHorizontal match {
       case Horizontal.Left =>
