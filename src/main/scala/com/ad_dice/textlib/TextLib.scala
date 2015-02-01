@@ -11,6 +11,7 @@ case class TargetAreaInfo(xt: Int, yt: Int, xb: Int, yb: Int, size: Int)
 
 object TextLib extends App {
 
+    val defaultSize = 100.0
     val WidthDefault = 2
     val HeightDefault = 2
     def defaultFontSize: Int = 10 //FontDefault
@@ -101,7 +102,7 @@ object TextLib extends App {
     def verticalRatio(letter: Char): Double = {
       var count_letter = 0.0
       if(rotationAlignUpChars(letter)){
-        count_letter += 1 / 2.0
+        count_letter += 2 / 4.0
       }
       else if(rotationAlignDownChars(letter)){
         count_letter += 3 / 4.0
@@ -117,6 +118,32 @@ object TextLib extends App {
       }
       else{
         count_letter += 1
+      }
+
+      return count_letter
+    }
+
+    def horizontalRatio(g: Graphics2D, letter: Char): Double = {
+      val font_init = g.getFont.deriveFont(100.toFloat)
+      g.setFont(font_init)
+
+      return g.getFontMetrics(font_init).stringWidth(letter.toString) / 100.0
+    }
+
+
+    def countVerticalSourceSize(source: String): Double = {
+      var count_letter = 0.0
+      for(letter <- source) {
+        count_letter += verticalRatio(letter)
+      }
+
+      return count_letter
+    }
+
+    def countHorizontalSourceSize(g: Graphics2D, source: String): Double = {
+      var count_letter = 0.0
+      for(letter <- source) {
+        count_letter += horizontalRatio(g, letter)
       }
 
       return count_letter
@@ -278,7 +305,7 @@ object TextLib extends App {
       //g.setFont(g.getFont.deriveFont(size.toFloat))
       //for(i <- 0 to text.length - 1)
         //println(text(i), g.getFontMetrics(font).stringWidth(text(i).toString), g.getFontMetrics.getHeight())
-      g.drawString(text, x, y + size * 14 / 16)
+      g.drawString(text, x, y + size * 13 / 16)
     }
 
    /** write strings by vertical type and convert to image file
@@ -332,10 +359,14 @@ object TextLib extends App {
     val height = (y_bottom - targetAreaInfo.yt).abs
     val width = (x_bottom - targetAreaInfo.xt).abs
 
-    val line_numbers = width / font_size
-    //println((width / font_size).toDouble)
+    var count_letter = countVerticalSourceSize(source)
+  
+    val line_numbers = if(count_letter.ceil.toInt <= (width / font_size - 1) * (height / font_size)) (width / font_size - 1) else (width / font_size)
+    // println(width / font_size, line_numbers)
     val font = g.getFont.deriveFont(font_size.toFloat)
     g.setFont(font)
+
+    val marginErr = font_size / 8
     var source_heightS = 0.0
     var j, k = 0
 
@@ -365,19 +396,19 @@ object TextLib extends App {
             case Vertical.Bottom =>
             alignHorizontal match {
               case Horizontal.Left =>
-                writeVertical(g, sub_source, font_size, targetAreaInfo.xt + k * font_size , targetAreaInfo.yb - source_height)
+                writeVertical(g, sub_source, font_size, targetAreaInfo.xt + k * font_size , targetAreaInfo.yb - source_height - marginErr)
               case Horizontal.Right =>
-                writeVertical(g, sub_source, font_size, targetAreaInfo.xb - font_size - k * font_size, targetAreaInfo.yb - source_height)
+                writeVertical(g, sub_source, font_size, targetAreaInfo.xb - font_size - k * font_size, targetAreaInfo.yb - source_height - marginErr)
               case Horizontal.CenterLeft =>
                 if(line_numbers % 2 == 0)
-                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height)
+                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height - marginErr)
                 else
-                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2 - (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height)
+                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2 - (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height - marginErr)
               case Horizontal.CenterRight =>
                 if(line_numbers % 2 == 0)
-                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 + (line_numbers / 2 - k - 1) * font_size, targetAreaInfo.yb - source_height)
+                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 + (line_numbers / 2 - k - 1) * font_size, targetAreaInfo.yb - source_height - marginErr)
                 else
-                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2 + (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height)
+                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2 + (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height - marginErr)
               }
             case Vertical.CenterTop| Vertical.CenterBottom =>
             alignHorizontal match {
@@ -425,19 +456,19 @@ object TextLib extends App {
           case Vertical.Bottom =>
             alignHorizontal match {
               case Horizontal.Left =>
-                writeVertical(g, sub_source, font_size, targetAreaInfo.xt + k * font_size , targetAreaInfo.yb - source_height)
+                writeVertical(g, sub_source, font_size, targetAreaInfo.xt + k * font_size , targetAreaInfo.yb - source_height - marginErr)
               case Horizontal.Right =>
-                writeVertical(g, sub_source, font_size, targetAreaInfo.xb - font_size - k * font_size, targetAreaInfo.yb - source_height)
+                writeVertical(g, sub_source, font_size, targetAreaInfo.xb - font_size - k * font_size, targetAreaInfo.yb - source_height - marginErr)
               case Horizontal.CenterLeft =>
                 if(line_numbers % 2 == 0)
-                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height)
+                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height - marginErr)
                 else
-                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2 - (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height)
+                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2 - (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height - marginErr)
               case Horizontal.CenterRight =>
                 if(line_numbers % 2 == 0)
-                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 + (line_numbers / 2 - k - 1) * font_size, targetAreaInfo.yb - source_height)
+                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 + (line_numbers / 2 - k - 1) * font_size, targetAreaInfo.yb - source_height - marginErr)
                 else
-                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2 + (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height)
+                  writeVertical(g, sub_source, font_size, targetAreaInfo.xt + width / 2 - font_size / 2 + (line_numbers / 2 - k) * font_size, targetAreaInfo.yb - source_height - marginErr)
               }
           case Vertical.CenterTop| Vertical.CenterBottom =>
             alignHorizontal match {
@@ -512,12 +543,13 @@ object TextLib extends App {
     //   return;
     // }
 
-
     val height = (y_bottom - targetAreaInfo.yt).abs
     val width = (x_bottom - targetAreaInfo.xt).abs
 
-    val line_numbers = height / font_size
+    var count_letter = countHorizontalSourceSize(g, source)
 
+    val line_numbers = if(count_letter.ceil.toInt <= (height / font_size - 1) * (width / font_size)) (height / font_size - 1) else (height / font_size)
+   
     val font = g.getFont.deriveFont(font_size.toFloat)
     g.setFont(font)
     var source_width = 0
@@ -711,24 +743,7 @@ object TextLib extends App {
     /** Counting letter */
     var count_letter = 0.0
     for(letter <- source){
-      if(rotationAlignUpChars(letter)){
-        count_letter += 1 / 2.0
-      }
-      else if(rotationAlignDownChars(letter)){
-        count_letter += 3 / 4.0
-      }
-      else if(rotationChars(letter)){
-        count_letter += 3 / 4.0
-      }
-      else if(translationChars(letter)){
-        count_letter += 1 / 4.0
-      }
-      else if(halfwidthAlphabetSmallUpResize(letter)){
-        count_letter += 3 / 4.0
-      }
-      else{
-        count_letter += 1
-      }
+      count_letter += verticalRatio(letter)
     }
 
     val letter_numbers = if(count_letter.ceil.toInt != 0) count_letter.ceil.toInt else 2
@@ -798,14 +813,9 @@ object TextLib extends App {
     val height = (y_bottom - targetAreaInfo.yt).abs
     val width = (x_bottom - targetAreaInfo.xt).abs
 
-    var count_letter = 0.0
-    val font_init = g.getFont.deriveFont(100.toFloat)
-    g.setFont(font_init)
-    for(i <- 0 to source.length - 1)
-      count_letter += g.getFontMetrics(font_init).stringWidth(source(i).toString) / 100.0
-
+    var count_letter = countHorizontalSourceSize(g, source)
     val letter_numbers = if(count_letter.ceil.toInt != 0) count_letter.ceil.toInt else 2
-    println(letter_numbers)
+    // println(letter_numbers)
 
     // Horizontal writing
     val letter_numbers_max = width / (height / 2)
@@ -1007,12 +1017,8 @@ object TextLib extends App {
     val height = (y_bottom - targetAreaInfo.yt).abs
     val width = (x_bottom - targetAreaInfo.xt).abs
 
-    var count_letter = 0.0
-    val font_init = g.getFont.deriveFont(100.toFloat)
-    g.setFont(font_init)
-    for(i <- 0 to source.length - 1)
-      count_letter += g.getFontMetrics(font_init).stringWidth(source(i).toString) / 100.0
-
+    var count_letter = countHorizontalSourceSize(g, source)
+    // println(count_letter)
     val font_size = if(width / count_letter.ceil.toInt < height) width / count_letter.ceil.toInt else height
 
     val font = g.getFont.deriveFont(font_size.toFloat)
@@ -1083,27 +1089,8 @@ object TextLib extends App {
 
     //println(source, height, width)
 
-    var count_letter = 0.0
-    for(letter <- source){
-      if(rotationAlignUpChars(letter)){
-        count_letter += 1 / 2.0
-      }
-      else if(rotationAlignDownChars(letter)){
-        count_letter += 3 / 4.0
-      }
-      else if(rotationChars(letter)){
-        count_letter += 3 / 4.0
-      }
-      else if(translationChars(letter)){
-        count_letter += 1 / 4.0
-      }
-      else if(halfwidthAlphabetSmallUpResize(letter)){
-        count_letter += 3 / 4.0
-      }
-      else{
-        count_letter += 1
-      }
-    }
+    var count_letter = countVerticalSourceSize(source)
+    
     //println(source.length, height / source.length)
     //println(count_letter.ceil.toInt, height / count_letter.ceil.toInt)
     val font_size = if(height / count_letter.ceil.toInt < width) height / count_letter.ceil.toInt else width
@@ -1143,4 +1130,116 @@ object TextLib extends App {
     }
   }
 
+  def countVerticalLinesRecursion(source: String, targetAreaInfo: TargetAreaInfo, i: Int = 1): Int = {
+    val height = targetAreaInfo.yb - targetAreaInfo.yt
+    val width = targetAreaInfo.xb - targetAreaInfo.xt
+
+    val text_length_max = height / (width / i)
+    val count_letter = countVerticalSourceSize(source)
+    if(count_letter <= text_length_max * i){
+        return i
+      }
+    else{
+        countVerticalLinesRecursion(source, targetAreaInfo, i + 1)
+      }
+  }
+  /** Count how many lines needed for Mutable Vertical Write */
+  def countVerticalLines(source: String, targetAreaInfo: TargetAreaInfo): Int = {
+    /** Exception: If x_top == x_bottom */
+    if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
+      Console.out.println( Console.RED + "Warning: WIDTH size is NULL. We set the WIDTH size to " + WidthDefault +" by default" + Console.RESET )
+    }
+    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
+
+    /** Exception: If y_top == y_bottom */
+    if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
+      Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
+    }
+
+    /** Exception: if source is NULL we call immutableVerticalWrite function **/
+    if(source.length() == 0){
+      Console.out.println( Console.RED + "Warning: your text is NULL"+ Console.RESET )
+      return 1
+    }
+    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
+
+    var lines = 0
+    val height = (y_bottom - targetAreaInfo.yt).abs
+    val width = if((x_bottom - targetAreaInfo.xt).abs != 0) (x_bottom - targetAreaInfo.xt).abs else 2
+
+    /** Counting letter */
+    var count_letter = countVerticalSourceSize(source)
+    
+    val letter_numbers = if(count_letter.ceil.toInt != 0) count_letter.ceil.toInt else 2
+    val letter_numbers_max = height / (width / 2)
+    // println(count_letter, source.length, width)
+    
+    // write on one line
+    if(letter_numbers <= letter_numbers_max){
+      lines = 1
+    }
+    else{
+      lines = countVerticalLinesRecursion(source, targetAreaInfo)
+      }
+
+    val line_numbers = if(count_letter.ceil.toInt <= (lines - 1) * (height / (width / lines))) lines - 1 else lines
+    return line_numbers
+  }
+
+  /** Count how many lines needed for Mutable Horizontal Write */
+  def countHorizontalLinesRecursion(g: Graphics2D, source: String, targetAreaInfo: TargetAreaInfo, i: Int = 1): Int = {
+    val height = targetAreaInfo.yb - targetAreaInfo.yt
+    val width = targetAreaInfo.xb - targetAreaInfo.xt
+
+    val text_length_max = width / (height / i)
+    val count_letter = countHorizontalSourceSize(g, source)
+    if(count_letter <= text_length_max * i){
+        return i
+      }
+    else{
+        countHorizontalLinesRecursion(g, source, targetAreaInfo, i + 1)
+      }
+  }
+  /** Count how many lines needed for Mutable Vertical Write */
+  def countHorizontalLines(g: Graphics2D,source: String, targetAreaInfo: TargetAreaInfo): Int = {
+    /** Exception: If x_top == x_bottom */
+    if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){
+      Console.out.println( Console.RED + "Warning: WIDTH size is NULL. We set the WIDTH size to " + WidthDefault +" by default" + Console.RESET )
+    }
+    val x_bottom = if(targetAreaInfo.xt == targetAreaInfo.xb || targetAreaInfo.xb - targetAreaInfo.xt < 2){WidthDefault + targetAreaInfo.xt}else{targetAreaInfo.xb}
+
+    /** Exception: If y_top == y_bottom */
+    if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){
+      Console.out.println( Console.RED + "Warning: HEIGHT size is NULL. We set the HEIGHT size to " + HeightDefault +" by default" + Console.RESET )
+    }
+
+    /** Exception: if source is NULL we call immutableVerticalWrite function **/
+    if(source.length() == 0){
+      Console.out.println( Console.RED + "Warning: your text is NULL"+ Console.RESET )
+      return 1
+    }
+    val y_bottom = if(targetAreaInfo.yt == targetAreaInfo.yb || targetAreaInfo.yb - targetAreaInfo.yt < 2){WidthDefault + targetAreaInfo.yt}else{targetAreaInfo.yb}
+
+    var lines = 0
+    val height = if((y_bottom - targetAreaInfo.yt).abs != 0) (y_bottom - targetAreaInfo.yt).abs else 2
+    val width = if((x_bottom - targetAreaInfo.xt).abs != 0) (x_bottom - targetAreaInfo.xt).abs else 2
+
+    /** Counting letter */
+    var count_letter = countHorizontalSourceSize(g, source)
+    
+    val letter_numbers = if(count_letter.ceil.toInt != 0) count_letter.ceil.toInt else 2
+    val letter_numbers_max = width / (height / 2)
+    // println(count_letter, source.length, width)
+    
+    // write on one line
+    if(letter_numbers <= letter_numbers_max){
+      lines = 1
+    }
+    else{
+      lines = countHorizontalLinesRecursion(g, source, targetAreaInfo)
+      }
+
+    val line_numbers = if(count_letter.ceil.toInt <= (lines - 1) * (width / (height / lines))) lines - 1 else lines
+    return line_numbers
+  }
 }
